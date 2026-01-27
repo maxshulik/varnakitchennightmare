@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varna Apartment - Appliance Selector</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #666;
+            --border: #e5e5e5;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --selected-bg: #eff6ff;
+            --selected-border: #2563eb;
+            --price: #059669;
+            --total-bg: #1a1a1a;
+            --total-text: #ffffff;
+            --rank-gold: #f59e0b;
+            --rank-silver: #9ca3af;
+            --rank-bronze: #d97706;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .header p { font-size: 0.875rem; color: var(--text-muted); }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 1rem; }
+
+        .category {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .category-header:hover { background: var(--bg); }
+
+        .category-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-title .icon { font-size: 1.25rem; }
+        .category-selected { font-size: 0.875rem; color: var(--price); font-weight: 500; }
+        .category-arrow { transition: transform 0.2s; color: var(--text-muted); }
+        .category.open .category-arrow { transform: rotate(180deg); }
+        .category-content { display: none; border-top: 1px solid var(--border); }
+        .category.open .category-content { display: block; }
+        .category-desc { padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.8125rem; border-bottom: 1px solid var(--border); }
+
+        .top-picks {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .top-picks h4 { font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.75rem; color: #92400e; }
+
+        .pick-item {
+            background: white;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .pick-item:last-child { margin-bottom: 0; }
+
+        .pick-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .pick-rank {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .pick-rank.gold { background: var(--rank-gold); }
+        .pick-rank.silver { background: var(--rank-silver); }
+        .pick-rank.bronze { background: var(--rank-bronze); }
+
+        .pick-reason { color: var(--text-muted); font-size: 0.75rem; line-height: 1.4; }
+
+        .option {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .option:last-child { border-bottom: none; }
+        .option:hover { background: var(--bg); }
+
+        .option.selected {
+            background: var(--selected-bg);
+            border-left: 3px solid var(--selected-border);
+            padding-left: calc(1rem - 3px);
+        }
+
+        .option-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .option input[type="radio"] { margin-top: 0.25rem; accent-color: var(--accent); }
+
+        .option-info { flex: 1; min-width: 0; }
+
+        .option-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-rank {
+            background: var(--accent);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        .option-rank.top1 { background: var(--rank-gold); }
+        .option-rank.top2 { background: var(--rank-silver); }
+        .option-rank.top3 { background: var(--rank-bronze); }
+
+        .option-brand {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .option-model { font-weight: 500; }
+        .option-features { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .option-right { text-align: right; flex-shrink: 0; }
+        .option-price { font-weight: 600; color: var(--price); font-size: 1rem; }
+        .option-store { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+
+        .option-link {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .option-link:hover { background: var(--accent-hover); }
+
+        .ratings {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .rating-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+        }
+
+        .rating-badge .label { color: var(--text-muted); }
+        .rating-badge .score { font-weight: 600; color: var(--text); }
+
+        .rating-stars {
+            color: #f59e0b;
+            font-size: 0.6rem;
+            letter-spacing: -1px;
+        }
+
+        .total-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--total-bg);
+            color: var(--total-text);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .total-label { font-size: 0.875rem; opacity: 0.8; }
+        .total-amount { font-size: 1.5rem; font-weight: 700; }
+        .total-count { font-size: 0.75rem; opacity: 0.6; }
+
+        .skip-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8125rem;
+            margin: 0.5rem 1rem 1rem;
+        }
+
+        .skip-btn:hover { background: var(--bg); }
+        .skip-btn.active { background: var(--selected-bg); border-color: var(--selected-border); color: var(--text); }
+
+        @media (max-width: 600px) {
+            .option-main { flex-wrap: wrap; }
+            .option-right {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 0.5rem;
+                padding-left: 1.5rem;
+            }
+            .option-store { margin-bottom: 0; }
+            .ratings { margin-top: 0.75rem; padding-left: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container" style="padding: 0;">
+            <h1>Varna Apartment Appliances</h1>
+            <p>Select appliances for your new home - sorted by recommendation</p>
+        </div>
+    </header>
+
+    <main class="container" id="app"></main>
+
+    <footer class="total-bar">
+        <div>
+            <div class="total-label">Total Estimate</div>
+            <div class="total-count" id="selectedCount">0 of 9 selected</div>
+        </div>
+        <div class="total-amount" id="totalAmount">€0</div>
+    </footer>
+
+    <script>
+        // Rating: reviews (user reviews score), value (price vs quality), features, connectivity (smart/wifi), efficiency (energy class)
+        // All ratings 1-5 scale. Options sorted by recommendation rank (1 = best)
+        
+        const applianceData = {
+            refrigerator: {
+                name: "Refrigerator",
+                icon: "🧊",
+                description: "Freestanding, 60cm, ~200cm tall",
+                topPicks: [
+                    { rank: 1, name: "Samsung RB38C7AGWS9/EF", reason: "Best overall: WiFi connectivity, AI Energy optimization, Class A efficiency, and excellent build quality at a reasonable premium. Smart features justify the price." },
+                    { rank: 2, name: "Bosch KGN397LEQ", reason: "Best value: German engineering, No Frost, Energy Class A at the lowest price point. Reliable brand with 5-year warranty option." },
+                    { rank: 3, name: "LG GBB72MCVGN", reason: "Best technology: DoorCooling+ keeps food fresher, Linear Inverter is quietest and most efficient compressor tech. Great balance of features." }
+                ],
+                options: [
+                    { id: "fridge-1", rank: 1, brand: "Samsung", model: "RB38C7AGWS9/EF", price: 750, store: "eMAG", url: "https://www.emag.bg/hladilnik-samsung-387-l-no-frost-klas-a-twin-metal-cooling-digital-inverter-smart-things-wifi-ai-energy-h-203-sm-inox-rb38c7agws9-ef/pd/D1B8F1YBM/", features: "387L, WiFi, AI Energy, Class A, 203cm", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 5, efficiency: 5 } },
+                    { id: "fridge-2", rank: 2, brand: "Bosch", model: "KGN397LEQ", price: 638, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGN397LEQ/p/662813", features: "No Frost, Energy Class A, 203cm, German Quality", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "fridge-3", rank: 3, brand: "LG", model: "GBB72MCVGN", price: 680, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBB72MCVGN", features: "DoorCooling+, Linear Inverter, No Frost", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 4 } },
+                    { id: "fridge-4", rank: 4, brand: "Samsung", model: "RB34C7B5E22/EF", price: 653, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-SAMSUNG-RB34C7B5E22-EF/p/652536", features: "344L, Total No Frost, Inverter, 185cm", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "fridge-5", rank: 5, brand: "LG", model: "GBBS514CPY", price: 669, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBBS514CPY", features: "DoorCooling+, Inverter Compressor", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-6", rank: 6, brand: "Bosch", model: "KGV58VLEAS", price: 704, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGV58VLEAS/p/662830", features: "503L, 70cm wide, 191cm, Inox", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-7", rank: 7, brand: "Samsung", model: "RB38C600CS9/EF", price: 720, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20RB38C600CS9", features: "390L, WiFi, AI Energy, Class C", ratings: { reviews: 4, value: 3, features: 4, connectivity: 5, efficiency: 3 } },
+                    { id: "fridge-8", rank: 8, brand: "Liebherr", model: "CNdgc 5203", price: 820, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-LIEBHERR-CNdgc-5203/p/654343", features: "Premium German, 185cm, No Frost", ratings: { reviews: 4.5, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-9", rank: 9, brand: "LG", model: "GBBS726AEV", price: 897, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBBS726AEV", features: "Premium, 203cm, DoorCooling+", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "fridge-10", rank: 10, brand: "Bosch", model: "KGN394ICF", price: 970, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGN394ICF/p/652626", features: "363L, Semi No Frost, Class C, 203cm", ratings: { reviews: 4, value: 2, features: 3, connectivity: 2, efficiency: 3 } }
+                ]
+            },
+            cooktop: {
+                name: "Induction Cooktop",
+                icon: "🔥",
+                description: "Built-in, 60cm, 4 zones",
+                topPicks: [
+                    { rank: 1, name: "Bosch PIE631FB1E", reason: "Best overall: 17 power levels, TouchSelect controls, excellent heat distribution. Bosch reliability with great user reviews. Sweet spot of features vs price." },
+                    { rank: 2, name: "Bosch PXE675DC1E", reason: "Best premium: FlexInduction zone for large pans, DirectSelect Plus controls. Worth the upgrade if you cook with oversized cookware." },
+                    { rank: 3, name: "Electrolux EIV634", reason: "Best value: Bridge function for griddles, solid build quality at lowest price for a reputable brand. Great entry point." }
+                ],
+                options: [
+                    { id: "cooktop-1", rank: 1, brand: "Bosch", model: "PIE631FB1E", price: 450, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PIE631FB1E", features: "60cm, 4 zones, TouchSelect, 17 power levels", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-2", rank: 2, brand: "Bosch", model: "PXE675DC1E", price: 664, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PXE675DC1E", features: "60cm, FlexInduction, DirectSelect", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-3", rank: 3, brand: "Electrolux", model: "EIV634", price: 380, store: "eMAG", url: "https://www.emag.bg/search/Electrolux%20EIV634", features: "60cm, 4 zones, Bridge function", ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "cooktop-4", rank: 4, brand: "AEG", model: "IKE64471FB", price: 550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=IKE64471FB", features: "60cm, MaxiSense, Bridge function", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-5", rank: 5, brand: "Siemens", model: "EU631FEB1E", price: 480, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EU631FEB1E", features: "60cm, iQ100, TouchControl", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-6", rank: 6, brand: "Samsung", model: "NZ64B5045GK", price: 520, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20NZ64B5045GK", features: "60cm, Virtual Flame, Flex Zone", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
+                    { id: "cooktop-7", rank: 7, brand: "Electrolux", model: "EIS62453IT", price: 562, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Plot-za-vgrazhdane-ELECTROLUX-EIS62453IT/p/654592", features: "56cm, 4 zones, Touch control, Timer", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "cooktop-8", rank: 8, brand: "Bosch", model: "PVQ61CHB1E", price: 613, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Plot-za-vgrazhdane-BOSCH-PVQ61CHB1E/p/654653", features: "60cm, PerfectFry sensor, Timer", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "cooktop-9", rank: 9, brand: "Whirlpool", model: "WL S2260 NE", price: 350, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WL%20S2260", features: "60cm, 4 zones, Booster function", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 4 } },
+                    { id: "cooktop-10", rank: 10, brand: "Gorenje", model: "IT643BX", price: 320, store: "Technopolis", url: "https://www.technopolis.bg/search?text=IT643BX", features: "60cm, 4 zones, PowerBoost", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 4 } }
+                ]
+            },
+            hood: {
+                name: "Cooker Hood",
+                icon: "💨",
+                description: "Built-in/Telescopic, 60cm",
+                topPicks: [
+                    { rank: 1, name: "Bosch DFR067A52", reason: "Best overall: 399m³/h airflow, Energy class A, quiet 53dB, LED lighting. German made with 5-year warranty. Best balance of power and noise." },
+                    { rank: 2, name: "Elica ELITE 14 LUX", reason: "Best value: Telescopic design saves space, 304m³/h sufficient for most cooking. Sleek glass panel design at affordable price." },
+                    { rank: 3, name: "Siemens LI67SA531", reason: "Best mid-range: 740m³/h for serious cooking, iQ300 series reliability. Worth it if you cook frequently with strong odors." }
+                ],
+                options: [
+                    { id: "hood-1", rank: 1, brand: "Bosch", model: "DFR067A52", price: 373, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-BOSCH-DFR067A52/p/650075", features: "60cm, 399m³/h, Class A, 53dB, LED", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "hood-2", rank: 2, brand: "Elica", model: "ELITE 14 LUX GRVT/A/60", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-ELICA-ELITE-14-LUX-GRVT-A-60/p/651377", features: "60cm, 304m³/h, Class D, LED, Glass panel", ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-3", rank: 3, brand: "Siemens", model: "LI67SA531", price: 420, store: "Technopolis", url: "https://www.technopolis.bg/search?text=LI67SA531", features: "60cm, 740m³/h, Class A, iQ300", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "hood-4", rank: 4, brand: "Bosch", model: "DLN56AC60", price: 332, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-palno-vgrazhdane/Absorbator-BOSCH-DLN56AC60/p/653825", features: "52cm, 570m³/h, Class B, LED", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "hood-5", rank: 5, brand: "Electrolux", model: "LFG716X", price: 350, store: "Technopolis", url: "https://www.technopolis.bg/search?text=LFG716X", features: "60cm, 600m³/h, Class B, LED", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "hood-6", rank: 6, brand: "Elica", model: "FLAT GLASS IX/A/60", price: 194, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-FLAT-GLASS-IX-A-60/p/651379", features: "60cm, 368m³/h, Class D, T-shape", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-7", rank: 7, brand: "AEG", model: "DPB3631S", price: 380, store: "Technopolis", url: "https://www.technopolis.bg/search?text=DPB3631S", features: "60cm, 600m³/h, Class A, Hob2Hood", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "hood-8", rank: 8, brand: "Elica", model: "MISSY LX IX/A/60", price: 112, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-MISSY-LX-IX-A-60/p/651380", features: "60cm, 395m³/h, Class D, LED", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-9", rank: 9, brand: "Whirlpool", model: "AKR 036 G BL", price: 150, store: "Technopolis", url: "https://www.technopolis.bg/search?text=AKR%20036", features: "60cm, 400m³/h, Class D, 3 speeds", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-10", rank: 10, brand: "Elica", model: "VERVE WH/F/60", price: 72, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-VERVE-WH-F-60/p/651375", features: "60cm, 205m³/h, Class C, Budget", ratings: { reviews: 3, value: 4, features: 2, connectivity: 1, efficiency: 2 } }
+                ]
+            },
+            oven: {
+                name: "Built-in Oven",
+                icon: "🍳",
+                description: "Built-in, 60cm, Pyrolytic recommended",
+                topPicks: [
+                    { rank: 1, name: "AEG BPE558370M", reason: "Best overall: Pyrolytic + Steam cooking + Meat probe. Which? highly rated. Perfect for serious home cooks who want versatility." },
+                    { rank: 2, name: "Bosch HBG536EW3", reason: "Best value: Soft close, 7 heating modes, A+ efficiency at moderate price. No pyrolytic but excellent core performance." },
+                    { rank: 3, name: "AEG BPS351161M", reason: "Best budget pyrolytic: Self-cleaning at the lowest price point. 72L capacity with telescopic shelves." }
+                ],
+                options: [
+                    { id: "oven-1", rank: 1, brand: "AEG", model: "BPE558370M", price: 766, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-BPE558370M/p/652189", features: "71L, A+, Pyrolytic, Steam, Meat probe", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "oven-2", rank: 2, brand: "Bosch", model: "HBG536EW3", price: 500, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HBG536EW3/p/653647", features: "71L, A+, Soft close, 7 heating modes", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-3", rank: 3, brand: "AEG", model: "BPS351161M", price: 485, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-BPS351161M/p/652313", features: "72L, A+, Pyrolytic, Telescopic shelves", ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-4", rank: 4, brand: "Siemens", model: "HB537A0S0", price: 580, store: "eMAG", url: "https://www.emag.bg/search/Siemens%20HB537A0S0", features: "71L, A+, iQ500, 3D HotAir", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-5", rank: 5, brand: "Samsung", model: "NV7B4430ZAS", price: 620, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20NV7B4430ZAS", features: "76L, A+, Dual Cook, Steam", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
+                    { id: "oven-6", rank: 6, brand: "Whirlpool", model: "W7 OM4 4S1 P", price: 450, store: "Technopolis", url: "https://www.technopolis.bg/search?text=W7%20OM4", features: "73L, A+, Pyrolytic, 6th Sense", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-7", rank: 7, brand: "Electrolux", model: "EOD3H70X", price: 400, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-EOD3H70X/p/707651", features: "72L, A, Telescopic shelves", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "oven-8", rank: 8, brand: "Gorenje", model: "BPS6747A04X", price: 380, store: "Technopolis", url: "https://www.technopolis.bg/search?text=BPS6747A04X", features: "77L, A+, Pyrolytic, AirFry", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-9", rank: 9, brand: "Bosch", model: "HBG7741W1", price: 935, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HBG7741W1/p/651983", features: "71L, A+, Pyrolytic, 14 functions", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "oven-10", rank: 10, brand: "Bosch", model: "HRG578CB7", price: 970, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HRG578CB7/p/653627", features: "71L, A+, Pyrolytic, Steam, AirFry", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } }
+                ]
+            },
+            dishwasher: {
+                name: "Dishwasher",
+                icon: "🍽️",
+                description: "Built-in, 60cm, 14 place settings",
+                topPicks: [
+                    { rank: 1, name: "Bosch SMV6ECX10E", reason: "Best overall: Class A efficiency, Inverter motor, 42dB quiet, Auto door opening. Consumer Reports top-rated brand with 5-year warranty." },
+                    { rank: 2, name: "Bosch SMV4HVX14E", reason: "Best value: WiFi control at entry-level price. Good efficiency (Class C) and Bosch reliability without premium cost." },
+                    { rank: 3, name: "Neff S155ECX00E", reason: "Best premium: TimeLight projects remaining time on floor, Flex baskets, same quality as Bosch (same parent company)." }
+                ],
+                options: [
+                    { id: "dish-1", rank: 1, brand: "Bosch", model: "SMV6ECX10E", price: 833, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6ECX10E/p/653335", features: "14 settings, A, Inverter, 42dB, Auto door", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-2", rank: 2, brand: "Bosch", model: "SMV4HVX14E", price: 572, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV4HVX14E/p/654660", features: "14 settings, C, WiFi, 46dB", ratings: { reviews: 4, value: 5, features: 4, connectivity: 4, efficiency: 3 } },
+                    { id: "dish-3", rank: 3, brand: "Neff", model: "S155ECX00E", price: 880, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-NEFF-S155ECX00E/p/652392", features: "14 settings, A, TimeLight, Flex baskets", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-4", rank: 4, brand: "Bosch", model: "SBH4ECX28E", price: 750, store: "Technopolis", url: "https://www.technopolis.bg/search?text=SBH4ECX28E", features: "14 settings, Inverter, 42dB, Made in Germany", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "dish-5", rank: 5, brand: "AEG", model: "FSE83837P", price: 820, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FSE83837P", features: "14 settings, A, ComfortLift, AirDry", ratings: { reviews: 4, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "dish-6", rank: 6, brand: "Electrolux", model: "EEM69410L", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EEM69410L", features: "15 settings, A, MaxiFlex, QuickSelect", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "dish-7", rank: 7, brand: "Samsung", model: "DW60M6050BB", price: 620, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20DW60M6050BB", features: "14 settings, E, WaterWall", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 3, efficiency: 2 } },
+                    { id: "dish-8", rank: 8, brand: "Bosch", model: "SMV6YCX05E", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6YCX05E/p/652077", features: "14 settings, A, Inverter, 44dB, Zeolith", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-9", rank: 9, brand: "Whirlpool", model: "WIO 3T141 PES", price: 550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WIO%203T141", features: "14 settings, C, 6th Sense, Natural Dry", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 2, efficiency: 3 } },
+                    { id: "dish-10", rank: 10, brand: "Siemens", model: "SN65ZX07CE", price: 950, store: "eMAG", url: "https://www.emag.bg/search/Siemens%20SN65ZX07CE", features: "14 settings, A, Zeolith drying", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 5 } }
+                ]
+            },
+            washerDryer: {
+                name: "Washer-Dryer Combo",
+                icon: "👕",
+                description: "Combined unit, 10kg wash / 6kg dry",
+                topPicks: [
+                    { rank: 1, name: "LG F4DR510S2M", reason: "Best overall: AI DD detects fabric for optimal wash, 10kg/6kg capacity, excellent reviews. Best washing performance in combo category." },
+                    { rank: 2, name: "Samsung WD90DG6G94BKU4", reason: "Best features: Steam refresh, Ecobubble, AI-powered cycles. Slightly less capacity but better drying than LG." },
+                    { rank: 3, name: "Bosch WNG254A0BY", reason: "Best premium: Iron Assist reduces wrinkles, AutoDry sensors. German reliability but at significant price premium." }
+                ],
+                options: [
+                    { id: "wd-1", rank: 1, brand: "LG", model: "F4DR510S2M", price: 715, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-LG-F4DR510S2M/p/652143", features: "10kg/6kg, 1400rpm, Inverter, AI DD", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 4, efficiency: 4 } },
+                    { id: "wd-2", rank: 2, brand: "Samsung", model: "WD90DG6G94BKU4", price: 792, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD90DG6G94BKU4/p/654074", features: "9kg/6kg, 1400rpm, Steam, Inverter", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "wd-3", rank: 3, brand: "Bosch", model: "WNG254A0BY", price: 1073, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-BOSCH-WNG254A0BY/p/652647", features: "10kg/6kg, 1400rpm, AutoDry, Iron Assist", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-4", rank: 4, brand: "Samsung", model: "WD11DB8B85GBU4", price: 940, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD11DB8B85GBU4/p/653618", features: "11kg/6kg, 1400rpm, AI Ecobubble", ratings: { reviews: 4, value: 3, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "wd-5", rank: 5, brand: "LG", model: "F4DV710S2E", price: 850, store: "eMAG", url: "https://www.emag.bg/search/LG%20F4DV710S2E", features: "10.5kg/7kg, 1400rpm, TurboWash, Steam", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
+                    { id: "wd-6", rank: 6, brand: "Electrolux", model: "EW7W368S", price: 780, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EW7W368S", features: "8kg/4kg, 1600rpm, SteamCare, SensiCare", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-7", rank: 7, brand: "AEG", model: "L7WBG68W", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/search?text=L7WBG68W", features: "8kg/4kg, 1600rpm, DualSense, ProSteam", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-8", rank: 8, brand: "Whirlpool", model: "FWDG97168WS", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FWDG97168WS", features: "9kg/6kg, 1600rpm, FreshCare+", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "wd-9", rank: 9, brand: "Candy", model: "ROW4966DWMCE", price: 620, store: "Technopolis", url: "https://www.technopolis.bg/search?text=ROW4966DWMCE", features: "9kg/6kg, 1400rpm, WiFi, Steam", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 4, efficiency: 3 } },
+                    { id: "wd-10", rank: 10, brand: "Siemens", model: "WN54G2A0BY", price: 1100, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WN54G2A0BY", features: "10kg/6kg, 1400rpm, speedPack, iQdrive", ratings: { reviews: 4, value: 2, features: 4, connectivity: 3, efficiency: 4 } }
+                ]
+            },
+            microwave: {
+                name: "Microwave",
+                icon: "📻",
+                description: "Freestanding, 25-32L",
+                topPicks: [
+                    { rank: 1, name: "Samsung MS32DG4504ATE", reason: "Best overall: Large 32L capacity, 1500W power, ceramic interior easy to clean. Best value for a full-size microwave." },
+                    { rank: 2, name: "Panasonic NN-GT45KWSUG", reason: "Best premium: Inverter technology for even heating, grill function, 31L. Panasonic leads in microwave tech." },
+                    { rank: 3, name: "LG MH6565DIS", reason: "Best mid-range: Smart Inverter saves energy, grill included, NeoChef healthy cooking features." }
+                ],
+                options: [
+                    { id: "micro-1", rank: 1, brand: "Samsung", model: "MS32DG4504ATE", price: 138, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-MS32DG4504ATE/p/802859", features: "32L, 1500W, Ceramic interior", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-2", rank: 2, brand: "Panasonic", model: "NN-GT45KWSUG", price: 256, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-PANASONIC-NN-GT45KWSUG/p/801534", features: "31L, 1000W, Grill, Inverter", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "micro-3", rank: 3, brand: "LG", model: "MH6565DIS", price: 180, store: "eMAG", url: "https://www.emag.bg/search/LG%20MH6565DIS", features: "25L, 1000W, Smart Inverter, Grill", ratings: { reviews: 4, value: 5, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "micro-4", rank: 4, brand: "Panasonic", model: "NN-K36NBMEPG", price: 148, store: "Technopolis", url: "https://www.technopolis.bg/search?text=NN-K36NBMEPG", features: "24L, 900W, Grill function", ratings: { reviews: 4, value: 5, features: 4, connectivity: 1, efficiency: 4 } },
+                    { id: "micro-5", rank: 5, brand: "Samsung", model: "MG30T5018UE", price: 210, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-BESPOKE-MG30T5018UE/p/800170", features: "30L, 900W, Grill, Bespoke design", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-6", rank: 6, brand: "Bosch", model: "FFL023MS2", price: 165, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FFL023MS2", features: "20L, 800W, AutoPilot, LED display", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-7", rank: 7, brand: "Whirlpool", model: "MWP 253 SB", price: 195, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MWP%20253", features: "25L, 900W, Grill, Crisp", ratings: { reviews: 4, value: 4, features: 4, connectivity: 1, efficiency: 4 } },
+                    { id: "micro-8", rank: 8, brand: "Sharp", model: "R-760S", price: 220, store: "Technopolis", url: "https://www.technopolis.bg/search?text=R-760S", features: "23L, 900W, Grill, Convection", ratings: { reviews: 3.5, value: 3, features: 4, connectivity: 1, efficiency: 4 } },
+                    { id: "micro-9", rank: 9, brand: "Panasonic", model: "NN-ST22RBEVG", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-PANASONIC-NN-ST22RBEVG/p/803144", features: "20L, 800W, Compact", ratings: { reviews: 4, value: 4, features: 2, connectivity: 1, efficiency: 3 } },
+                    { id: "micro-10", rank: 10, brand: "Gorenje", model: "MO23ORAW", price: 95, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MO23ORAW", features: "23L, 900W, Retro design", ratings: { reviews: 3.5, value: 4, features: 2, connectivity: 1, efficiency: 3 } }
+                ]
+            },
+            ac: {
+                name: "Multi-Split AC",
+                icon: "❄️",
+                description: "2 indoor units (living + bedroom)",
+                topPicks: [
+                    { rank: 1, name: "Daikin 2MXM50A + 2x FTXM25R", reason: "Best overall: Industry-leading reliability, A++ efficiency, whisper-quiet operation, R32 refrigerant. Daikin invented VRV technology." },
+                    { rank: 2, name: "Mitsubishi Electric MXZ-2F53VF", reason: "Best premium: A+++ efficiency (highest rated), 12-year warranty, best for extreme climates. Worth the premium for longevity." },
+                    { rank: 3, name: "LG MU2R17 + 2x PC09SQ", reason: "Best value: ThinQ WiFi app control, A++ efficiency, good reliability at mid-range price. Best smart features for the money." }
+                ],
+                options: [
+                    { id: "ac-1", rank: 1, brand: "Daikin", model: "2MXM50A + 2x FTXM25R", price: 1850, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=2MXM50A", features: "5.0kW cooling, A++, R32, Quiet operation", ratings: { reviews: 5, value: 4, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "ac-2", rank: 2, brand: "Mitsubishi Electric", model: "MXZ-2F53VF + 2x MSZ-AP25", price: 2040, store: "AC Vent Varna", url: "https://acvent.bg/en/catalog/mitsubishi-electric-mxz-2f53vf-multi-split-system-outdoor-unit/", features: "5.3kW cooling, A+++, R32, WiFi ready", ratings: { reviews: 5, value: 4, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "ac-3", rank: 3, brand: "LG", model: "MU2R17 + 2x PC09SQ", price: 1550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MU2R17", features: "4.7kW cooling, A++, ThinQ WiFi", ratings: { reviews: 4, value: 5, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "ac-4", rank: 4, brand: "Fujitsu", model: "AOYG18KBTA2 + 2x ASYG09", price: 1750, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=AOYG18KBTA2", features: "5.4kW cooling, A++, Human sensor", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "ac-5", rank: 5, brand: "Samsung", model: "AJ050TXJ2KG + 2x AR09", price: 1650, store: "Technopolis", url: "https://www.technopolis.bg/search?text=AJ050TXJ2KG", features: "5.0kW cooling, A++, Wind-Free", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "ac-6", rank: 6, brand: "Mitsubishi Heavy", model: "SCM50ZS-W + 2x SRK25", price: 1900, store: "Condex", url: "https://condex.bg/en/product-details/srk-25-zsx-w-2/", features: "5.0kW cooling, A++, Allergen clear", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "ac-7", rank: 7, brand: "Panasonic", model: "CU-2Z50TBE + 2x CS-Z25", price: 1950, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=CU-2Z50TBE", features: "5.0kW cooling, A++, nanoe X", ratings: { reviews: 4, value: 3, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "ac-8", rank: 8, brand: "Toshiba", model: "RAS-2M18U2AVG + 2x RAS-B10", price: 1600, store: "Bittel", url: "https://www.bittel.bg/en/c/air-conditioning/multi-split-systems", features: "5.2kW cooling, A++, Quiet operation", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "ac-9", rank: 9, brand: "Midea", model: "M2OD-18HFN8 + 2x MSMBAU-09", price: 1200, store: "Midea Bulgaria", url: "https://www.midea.bg/en/midea-air-conditioning/midea-multi-split-air-conditioners/", features: "5.3kW cooling, A+, Budget friendly", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 3, efficiency: 3 } },
+                    { id: "ac-10", rank: 10, brand: "Daikin", model: "2MXM68A9 + 2x FTXM35R", price: 2812, store: "Tempex", url: "https://tempex.bg/en/multi-split-daikin.html", features: "6.8kW cooling, A+++, Powerful mode", ratings: { reviews: 5, value: 2, features: 5, connectivity: 4, efficiency: 5 } }
+                ]
+            },
+            tv: {
+                name: "TV",
+                icon: "📺",
+                description: "55\" OLED/QLED for living room",
+                topPicks: [
+                    { rank: 1, name: "LG OLED55B53LA", reason: "Best overall: True OLED with perfect blacks, 120Hz for gaming, Dolby Vision/Atmos. Best picture quality at this price point." },
+                    { rank: 2, name: "Samsung QE-55QN90F", reason: "Best for bright rooms: Mini-LED with 165Hz, Dolby Atmos, brightest TV in category. Ideal if your living room gets lots of sunlight." },
+                    { rank: 3, name: "Samsung QE-55Q80D", reason: "Best value QLED: Full Array backlighting, 120Hz, great gaming features at mid-range price. Sweet spot for most buyers." }
+                ],
+                options: [
+                    { id: "tv-1", rank: 1, brand: "LG", model: "OLED55B53LA", price: 1405, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-LG-OLED55B53LA-4K-Ultra-HD-OLED/p/13895", features: "55\", OLED, 120Hz, WebOS, Dolby Vision", ratings: { reviews: 5, value: 4, features: 5, connectivity: 5, efficiency: 3 } },
+                    { id: "tv-2", rank: 2, brand: "Samsung", model: "QE-55QN90F", price: 1124, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN90F-4K-Ultra-HD-Neo-QLED-Mini-LED/p/13998", features: "55\", Neo QLED Mini-LED, 165Hz, Dolby Atmos", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-3", rank: 3, brand: "Samsung", model: "QE-55Q80D", price: 766, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55Q80D-4K-Ultra-HD-QLED/p/11200", features: "55\", QLED, 120Hz, Full Array", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-4", rank: 4, brand: "LG", model: "OLED55C43LA", price: 1650, store: "eMAG", url: "https://www.emag.bg/search/LG%20OLED55C43LA", features: "55\", OLED evo, 120Hz, Alpha 9 Gen6", ratings: { reviews: 5, value: 3, features: 5, connectivity: 5, efficiency: 3 } },
+                    { id: "tv-5", rank: 5, brand: "Samsung", model: "QE-55S90D", price: 1550, store: "eMAG", url: "https://www.emag.bg/televizor-samsung-oled-55s90d-55-138-sm-smart-4k-ultra-hd-100hz-klas-g-model-2024-qe55s90daexxh/pd/DSYNZXYBM/", features: "55\", OLED, 120Hz, Neural Quantum Processor", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 5, efficiency: 3 } },
+                    { id: "tv-6", rank: 6, brand: "Samsung", model: "QE-55QN85D", price: 894, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN85D-4K-Ultra-HD-QLED/p/11067", features: "55\", Neo QLED, 100Hz, Object Tracking Sound", ratings: { reviews: 4, value: 4, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-7", rank: 7, brand: "Philips", model: "55OLED808", price: 1300, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55OLED808", features: "55\", OLED, 120Hz, Ambilight", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 3 } },
+                    { id: "tv-8", rank: 8, brand: "LG", model: "55QNED86A3C", price: 715, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55QNED86A3C", features: "55\", QNED Mini LED, 120Hz, Alpha 7", ratings: { reviews: 4, value: 5, features: 4, connectivity: 4, efficiency: 4 } },
+                    { id: "tv-9", rank: 9, brand: "Samsung", model: "QE-55Q67D", price: 511, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55Q67D-4K-Ultra-HD-QLED/p/11202", features: "55\", QLED, 60Hz, Quantum HDR", ratings: { reviews: 4, value: 5, features: 3, connectivity: 4, efficiency: 4 } },
+                    { id: "tv-10", rank: 10, brand: "Sony", model: "XR-55A80L", price: 1800, store: "Technopolis", url: "https://www.technopolis.bg/search?text=XR-55A80L", features: "55\", OLED, 120Hz, Acoustic Surface Audio", ratings: { reviews: 5, value: 2, features: 5, connectivity: 4, efficiency: 3 } }
+                ]
+            }
+        };
+
+        const selections = {};
+        const skipped = new Set();
+
+        function createElement(tag, className, textContent) {
+            const el = document.createElement(tag);
+            if (className) el.className = className;
+            if (textContent) el.textContent = textContent;
+            return el;
+        }
+
+        function renderStars(score) {
+            const full = Math.floor(score);
+            const half = score % 1 >= 0.5 ? 1 : 0;
+            return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+        }
+
+        function createRatingBadge(label, score) {
+            const badge = createElement('div', 'rating-badge');
+            badge.appendChild(createElement('span', 'label', label + ':'));
+            badge.appendChild(createElement('span', 'rating-stars', renderStars(score)));
+            badge.appendChild(createElement('span', 'score', score.toFixed(1)));
+            return badge;
+        }
+
+        function createTopPicksSection(picks) {
+            const section = createElement('div', 'top-picks');
+            section.appendChild(createElement('h4', '', 'Top 3 Recommendations'));
+            
+            picks.forEach(function(pick, idx) {
+                const item = createElement('div', 'pick-item');
+                const header = createElement('div', 'pick-header');
+                const rankClass = idx === 0 ? 'gold' : (idx === 1 ? 'silver' : 'bronze');
+                const rankEl = createElement('span', 'pick-rank ' + rankClass, '#' + pick.rank);
+                header.appendChild(rankEl);
+                header.appendChild(createElement('span', '', pick.name));
+                item.appendChild(header);
+                item.appendChild(createElement('div', 'pick-reason', pick.reason));
+                section.appendChild(item);
+            });
+            
+            return section;
+        }
+
+        function createOptionElement(categoryKey, opt, isSelected) {
+            const optionDiv = createElement('div', 'option' + (isSelected ? ' selected' : ''));
+            
+            const mainDiv = createElement('div', 'option-main');
+            
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = categoryKey;
+            radio.checked = isSelected;
+            
+            const infoDiv = createElement('div', 'option-info');
+            
+            const headerDiv = createElement('div', 'option-header');
+            const rankClass = opt.rank === 1 ? 'top1' : (opt.rank === 2 ? 'top2' : (opt.rank === 3 ? 'top3' : ''));
+            headerDiv.appendChild(createElement('span', 'option-rank ' + rankClass, '#' + opt.rank));
+            headerDiv.appendChild(createElement('span', 'option-brand', opt.brand));
+            
+            infoDiv.appendChild(headerDiv);
+            infoDiv.appendChild(createElement('div', 'option-model', opt.model));
+            infoDiv.appendChild(createElement('div', 'option-features', opt.features));
+            
+            const rightDiv = createElement('div', 'option-right');
+            const priceStoreDiv = document.createElement('div');
+            priceStoreDiv.appendChild(createElement('div', 'option-price', '€' + opt.price));
+            priceStoreDiv.appendChild(createElement('div', 'option-store', opt.store));
+            rightDiv.appendChild(priceStoreDiv);
+            
+            const buyLink = createElement('a', 'option-link', 'Buy');
+            buyLink.href = opt.url;
+            buyLink.target = '_blank';
+            buyLink.rel = 'noopener';
+            buyLink.addEventListener('click', function(e) { e.stopPropagation(); });
+            rightDiv.appendChild(buyLink);
+            
+            mainDiv.appendChild(radio);
+            mainDiv.appendChild(infoDiv);
+            mainDiv.appendChild(rightDiv);
+            
+            optionDiv.appendChild(mainDiv);
+            
+            // Ratings
+            if (opt.ratings) {
+                const ratingsDiv = createElement('div', 'ratings');
+                ratingsDiv.appendChild(createRatingBadge('Reviews', opt.ratings.reviews));
+                ratingsDiv.appendChild(createRatingBadge('Value', opt.ratings.value));
+                ratingsDiv.appendChild(createRatingBadge('Features', opt.ratings.features));
+                ratingsDiv.appendChild(createRatingBadge('Connect', opt.ratings.connectivity));
+                ratingsDiv.appendChild(createRatingBadge('Efficiency', opt.ratings.efficiency));
+                optionDiv.appendChild(ratingsDiv);
+            }
+            
+            optionDiv.addEventListener('click', function() {
+                selectOption(categoryKey, opt.id);
+            });
+            
+            return optionDiv;
+        }
+
+        function createCategoryElement(key, category) {
+            const categoryDiv = createElement('div', 'category');
+            categoryDiv.id = 'category-' + key;
+            
+            const selected = selections[key];
+            const isSkipped = skipped.has(key);
+            let selectedText = 'Not selected';
+            if (selected) {
+                selectedText = '€' + selected.price;
+            } else if (isSkipped) {
+                selectedText = 'Skipped';
+            }
+            
+            const headerDiv = createElement('div', 'category-header');
+            const titleDiv = createElement('div', 'category-title');
+            titleDiv.appendChild(createElement('span', 'icon', category.icon));
+            titleDiv.appendChild(createElement('span', '', category.name));
+            
+            const rightHeaderDiv = document.createElement('div');
+            rightHeaderDiv.style.cssText = 'display: flex; align-items: center; gap: 1rem;';
+            rightHeaderDiv.appendChild(createElement('span', 'category-selected', selectedText));
+            rightHeaderDiv.appendChild(createElement('span', 'category-arrow', '▼'));
+            
+            headerDiv.appendChild(titleDiv);
+            headerDiv.appendChild(rightHeaderDiv);
+            headerDiv.addEventListener('click', function() { toggleCategory(key); });
+            
+            const contentDiv = createElement('div', 'category-content');
+            contentDiv.appendChild(createElement('p', 'category-desc', category.description));
+            
+            if (category.topPicks) {
+                contentDiv.appendChild(createTopPicksSection(category.topPicks));
+            }
+            
+            const skipBtn = createElement('button', 'skip-btn' + (isSkipped ? ' active' : ''), isSkipped ? '✓ Skipped' : 'Skip this category');
+            skipBtn.addEventListener('click', function() { toggleSkip(key); });
+            contentDiv.appendChild(skipBtn);
+            
+            // Sort options by rank
+            var sortedOptions = category.options.slice().sort(function(a, b) { return a.rank - b.rank; });
+            
+            sortedOptions.forEach(function(opt) {
+                const isSelected = selections[key] && selections[key].id === opt.id;
+                contentDiv.appendChild(createOptionElement(key, opt, isSelected));
+            });
+            
+            categoryDiv.appendChild(headerDiv);
+            categoryDiv.appendChild(contentDiv);
+            
+            return categoryDiv;
+        }
+
+        function renderCategories() {
+            const app = document.getElementById('app');
+            const openCategories = [];
+            
+            document.querySelectorAll('.category.open').forEach(function(el) {
+                openCategories.push(el.id);
+            });
+            
+            while (app.firstChild) {
+                app.removeChild(app.firstChild);
+            }
+
+            Object.keys(applianceData).forEach(function(key) {
+                const categoryEl = createCategoryElement(key, applianceData[key]);
+                if (openCategories.indexOf('category-' + key) !== -1) {
+                    categoryEl.classList.add('open');
+                }
+                app.appendChild(categoryEl);
+            });
+
+            updateTotal();
+        }
+
+        function toggleCategory(key) {
+            document.getElementById('category-' + key).classList.toggle('open');
+        }
+
+        function selectOption(categoryKey, optionId) {
+            const category = applianceData[categoryKey];
+            const option = category.options.find(function(o) { return o.id === optionId; });
+            selections[categoryKey] = option;
+            skipped.delete(categoryKey);
+            
+            const categoryEl = document.getElementById('category-' + categoryKey);
+            const wasOpen = categoryEl.classList.contains('open');
+            
+            renderCategories();
+            
+            if (wasOpen) {
+                document.getElementById('category-' + categoryKey).classList.add('open');
+            }
+        }
+
+        function toggleSkip(key) {
+            if (skipped.has(key)) {
+                skipped.delete(key);
+            } else {
+                skipped.add(key);
+                delete selections[key];
+            }
+            
+            const categoryEl = document.getElementById('category-' + key);
+            const wasOpen = categoryEl.classList.contains('open');
+            
+            renderCategories();
+            
+            if (wasOpen) {
+                document.getElementById('category-' + key).classList.add('open');
+            }
+        }
+
+        function updateTotal() {
+            let total = 0;
+            let count = 0;
+            Object.keys(selections).forEach(function(key) {
+                if (selections[key]) {
+                    total += selections[key].price;
+                    count++;
+                }
+            });
+            const totalCategories = Object.keys(applianceData).length;
+            
+            document.getElementById('totalAmount').textContent = '€' + total.toLocaleString();
+            document.getElementById('selectedCount').textContent = count + ' of ' + totalCategories + ' selected';
+        }
+
+        renderCategories();
+    </script>
+</body>
+</html>
