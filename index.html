@@ -21,6 +21,8 @@
             --rank-gold: #f59e0b;
             --rank-silver: #9ca3af;
             --rank-bronze: #d97706;
+            --quoted-bg: #fef3c7;
+            --quoted-border: #f59e0b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -142,6 +144,16 @@
             padding-left: calc(1rem - 3px);
         }
 
+        .option.quoted {
+            background: var(--quoted-bg);
+            border-left: 3px solid var(--quoted-border);
+            padding-left: calc(1rem - 3px);
+        }
+
+        .option.quoted.selected {
+            background: linear-gradient(135deg, var(--quoted-bg) 0%, var(--selected-bg) 100%);
+        }
+
         .option-main {
             display: flex;
             align-items: flex-start;
@@ -157,6 +169,7 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 0.25rem;
+            flex-wrap: wrap;
         }
 
         .option-rank {
@@ -171,6 +184,16 @@
         .option-rank.top1 { background: var(--rank-gold); }
         .option-rank.top2 { background: var(--rank-silver); }
         .option-rank.top3 { background: var(--rank-bronze); }
+
+        .quoted-tag {
+            background: var(--quoted-border);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
 
         .option-brand {
             font-size: 0.75rem;
@@ -258,6 +281,33 @@
         .skip-btn:hover { background: var(--bg); }
         .skip-btn.active { background: var(--selected-bg); border-color: var(--selected-border); color: var(--text); }
 
+        .legend {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+
+        .legend h3 { font-size: 0.875rem; margin-bottom: 0.5rem; }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .legend-color.quoted { background: var(--quoted-bg); border: 2px solid var(--quoted-border); }
+        .legend-color.regular { background: white; border: 1px solid var(--border); }
+
         @media (max-width: 600px) {
             .option-main { flex-wrap: wrap; }
             .option-right {
@@ -277,11 +327,23 @@
     <header class="header">
         <div class="container" style="padding: 0;">
             <h1>Varna Apartment Appliances</h1>
-            <p>Select appliances for your new home - sorted by recommendation</p>
+            <p>Prices verified Jan 2026 - sorted by recommendation</p>
         </div>
     </header>
 
-    <main class="container" id="app"></main>
+    <main class="container" id="app">
+        <div class="legend">
+            <h3>Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color quoted"></div>
+                <span>Quoted by Tim Design (local company baseline)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color regular"></div>
+                <span>Other options from Bulgarian retailers</span>
+            </div>
+        </div>
+    </main>
 
     <footer class="total-bar">
         <div>
@@ -292,8 +354,8 @@
     </footer>
 
     <script>
-        // Rating: reviews (user reviews score), value (price vs quality), features, connectivity (smart/wifi), efficiency (energy class)
-        // All ratings 1-5 scale. Options sorted by recommendation rank (1 = best)
+        // CORRECTED PRICES - Verified Jan 2026 from Bulgarian retailers
+        // Quoted items from Tim Design marked with isQuoted: true
         
         const applianceData = {
             refrigerator: {
@@ -301,43 +363,43 @@
                 icon: "🧊",
                 description: "Freestanding, 60cm, ~200cm tall",
                 topPicks: [
-                    { rank: 1, name: "Samsung RB38C7AGWS9/EF", reason: "Best overall: WiFi connectivity, AI Energy optimization, Class A efficiency, and excellent build quality at a reasonable premium. Smart features justify the price." },
-                    { rank: 2, name: "Bosch KGN397LEQ", reason: "Best value: German engineering, No Frost, Energy Class A at the lowest price point. Reliable brand with 5-year warranty option." },
-                    { rank: 3, name: "LG GBB72MCVGN", reason: "Best technology: DoorCooling+ keeps food fresher, Linear Inverter is quietest and most efficient compressor tech. Great balance of features." }
+                    { rank: 1, name: "Liebherr CNsfd 5203 (QUOTED)", reason: "Best value from quote: Premium German brand, NoFrost, at competitive €655. 5-year warranty included. Excellent price-quality ratio from Tim Design." },
+                    { rank: 2, name: "Bosch KGN397LEQ", reason: "Best retail value: German engineering, No Frost, Energy Class E at €638. Reliable brand with extended warranty option." },
+                    { rank: 3, name: "LG GBB72MCVGN", reason: "Best technology: DoorCooling+ for even cooling, Linear Inverter (quietest compressor). Good mid-range option." }
                 ],
                 options: [
-                    { id: "fridge-1", rank: 1, brand: "Samsung", model: "RB38C7AGWS9/EF", price: 750, store: "eMAG", url: "https://www.emag.bg/hladilnik-samsung-387-l-no-frost-klas-a-twin-metal-cooling-digital-inverter-smart-things-wifi-ai-energy-h-203-sm-inox-rb38c7agws9-ef/pd/D1B8F1YBM/", features: "387L, WiFi, AI Energy, Class A, 203cm", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 5, efficiency: 5 } },
-                    { id: "fridge-2", rank: 2, brand: "Bosch", model: "KGN397LEQ", price: 638, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGN397LEQ/p/662813", features: "No Frost, Energy Class A, 203cm, German Quality", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "fridge-3", rank: 3, brand: "LG", model: "GBB72MCVGN", price: 680, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBB72MCVGN", features: "DoorCooling+, Linear Inverter, No Frost", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 4 } },
-                    { id: "fridge-4", rank: 4, brand: "Samsung", model: "RB34C7B5E22/EF", price: 653, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-SAMSUNG-RB34C7B5E22-EF/p/652536", features: "344L, Total No Frost, Inverter, 185cm", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
-                    { id: "fridge-5", rank: 5, brand: "LG", model: "GBBS514CPY", price: 669, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBBS514CPY", features: "DoorCooling+, Inverter Compressor", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "fridge-6", rank: 6, brand: "Bosch", model: "KGV58VLEAS", price: 704, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGV58VLEAS/p/662830", features: "503L, 70cm wide, 191cm, Inox", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
-                    { id: "fridge-7", rank: 7, brand: "Samsung", model: "RB38C600CS9/EF", price: 720, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20RB38C600CS9", features: "390L, WiFi, AI Energy, Class C", ratings: { reviews: 4, value: 3, features: 4, connectivity: 5, efficiency: 3 } },
-                    { id: "fridge-8", rank: 8, brand: "Liebherr", model: "CNdgc 5203", price: 820, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-LIEBHERR-CNdgc-5203/p/654343", features: "Premium German, 185cm, No Frost", ratings: { reviews: 4.5, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "fridge-9", rank: 9, brand: "LG", model: "GBBS726AEV", price: 897, store: "eMAG", url: "https://www.emag.bg/search/LG%20GBBS726AEV", features: "Premium, 203cm, DoorCooling+", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 4 } },
-                    { id: "fridge-10", rank: 10, brand: "Bosch", model: "KGN394ICF", price: 970, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGN394ICF/p/652626", features: "363L, Semi No Frost, Class C, 203cm", ratings: { reviews: 4, value: 2, features: 3, connectivity: 2, efficiency: 3 } }
+                    { id: "fridge-q1", rank: 1, brand: "Liebherr", model: "CNsfd 5203 Pure NoFrost", price: 655, store: "Tim Design Quote", url: "#", features: "330L, NoFrost, Energy C, 185cm, 5-year warranty", isQuoted: true, ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-1", rank: 2, brand: "Bosch", model: "KGN397LEQ", price: 638, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGN397LEQ/p/662813", features: "368L, No Frost, Energy E, 203cm", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 3 } },
+                    { id: "fridge-2", rank: 3, brand: "LG", model: "GBB72MCVGN", price: 720, store: "Technopolis", url: "https://www.technopolis.bg/search?text=GBB72MCVGN", features: "384L, DoorCooling+, Linear Inverter, No Frost", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 4 } },
+                    { id: "fridge-3", rank: 4, brand: "LG", model: "GTBV38PZGKD", price: 577, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-goren-frizer/Hladilnik-s-goren-frizer-LG-GTBV38PZGKD/p/660258", features: "360L, Top freezer, 172cm, Budget option", ratings: { reviews: 4, value: 5, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-4", rank: 5, brand: "Samsung", model: "RB34C7B5E22/EF", price: 750, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-SAMSUNG-RB34C7B5E22-EF/p/652536", features: "344L, Total No Frost, Inverter, 185cm", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "fridge-5", rank: 6, brand: "Bosch", model: "KGV58VLEAS", price: 704, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-BOSCH-KGV58VLEAS/p/662830", features: "503L, 70cm wide, 191cm, Large capacity", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 3 } },
+                    { id: "fridge-6", rank: 7, brand: "Liebherr", model: "CNdgc 5203", price: 562, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-s-dolen-frizer/Hladilnik-s-dolen-frizer-LIEBHERR-CNdgc-5203/p/654343", features: "330L, Semi No Frost, 185cm", ratings: { reviews: 4, value: 5, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "fridge-7", rank: 8, brand: "Samsung", model: "BRB80F26BDF0EO", price: 945, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-za-vgrazhdane/Hladilnik-za-vgrazhdane-SAMSUNG-BRB80F26BDF0EO/p/653862", features: "264L, Built-in, 177cm", ratings: { reviews: 4, value: 3, features: 4, connectivity: 4, efficiency: 4 } },
+                    { id: "fridge-8", rank: 9, brand: "Samsung", model: "RB38C7AGWS9/EF", price: 1474, store: "eMAG", url: "https://www.emag.bg/hladilnik-samsung-387-l-no-frost-klas-a-twin-metal-cooling-digital-inverter-smart-things-wifi-ai-energy-h-203-sm-inox-rb38c7agws9-ef/pd/D1B8F1YBM/", features: "387L, WiFi, AI Energy, Class A, Premium", ratings: { reviews: 4.5, value: 2, features: 5, connectivity: 5, efficiency: 5 } },
+                    { id: "fridge-9", rank: 10, brand: "Bosch", model: "KAG93AIEP", price: 1942, store: "Technopolis", url: "https://www.technopolis.bg/en/Hladilnici-Side-by-Side/Hladilnik-BOSCH-KAG93AIEP/p/662819", features: "560L, Side-by-Side, Ice/Water dispenser", ratings: { reviews: 4.5, value: 2, features: 5, connectivity: 3, efficiency: 3 } }
                 ]
             },
             cooktop: {
-                name: "Induction Cooktop",
+                name: "Cooktop",
                 icon: "🔥",
-                description: "Built-in, 60cm, 4 zones",
+                description: "Built-in, 60cm (Induction recommended, ceramic quoted)",
                 topPicks: [
-                    { rank: 1, name: "Bosch PIE631FB1E", reason: "Best overall: 17 power levels, TouchSelect controls, excellent heat distribution. Bosch reliability with great user reviews. Sweet spot of features vs price." },
-                    { rank: 2, name: "Bosch PXE675DC1E", reason: "Best premium: FlexInduction zone for large pans, DirectSelect Plus controls. Worth the upgrade if you cook with oversized cookware." },
-                    { rank: 3, name: "Electrolux EIV634", reason: "Best value: Bridge function for griddles, solid build quality at lowest price for a reputable brand. Great entry point." }
+                    { rank: 1, name: "Bosch PIF672FB1E", reason: "Best induction value: 4 zones, touch control, 17 power levels at reasonable €430. Bosch reliability." },
+                    { rank: 2, name: "Electrolux LHR3233CK (QUOTED - Ceramic)", reason: "Budget baseline from quote: Ceramic/radiant at only €175. Good if induction not required." },
+                    { rank: 3, name: "Beko HII 64401 QT", reason: "Best budget induction: Full induction at only €256. Great entry point for induction cooking." }
                 ],
                 options: [
-                    { id: "cooktop-1", rank: 1, brand: "Bosch", model: "PIE631FB1E", price: 450, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PIE631FB1E", features: "60cm, 4 zones, TouchSelect, 17 power levels", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 2, efficiency: 5 } },
-                    { id: "cooktop-2", rank: 2, brand: "Bosch", model: "PXE675DC1E", price: 664, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PXE675DC1E", features: "60cm, FlexInduction, DirectSelect", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
-                    { id: "cooktop-3", rank: 3, brand: "Electrolux", model: "EIV634", price: 380, store: "eMAG", url: "https://www.emag.bg/search/Electrolux%20EIV634", features: "60cm, 4 zones, Bridge function", ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "cooktop-4", rank: 4, brand: "AEG", model: "IKE64471FB", price: 550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=IKE64471FB", features: "60cm, MaxiSense, Bridge function", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "cooktop-5", rank: 5, brand: "Siemens", model: "EU631FEB1E", price: 480, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EU631FEB1E", features: "60cm, iQ100, TouchControl", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "cooktop-6", rank: 6, brand: "Samsung", model: "NZ64B5045GK", price: 520, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20NZ64B5045GK", features: "60cm, Virtual Flame, Flex Zone", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
-                    { id: "cooktop-7", rank: 7, brand: "Electrolux", model: "EIS62453IT", price: 562, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Plot-za-vgrazhdane-ELECTROLUX-EIS62453IT/p/654592", features: "56cm, 4 zones, Touch control, Timer", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "cooktop-8", rank: 8, brand: "Bosch", model: "PVQ61CHB1E", price: 613, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Plot-za-vgrazhdane-BOSCH-PVQ61CHB1E/p/654653", features: "60cm, PerfectFry sensor, Timer", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "cooktop-9", rank: 9, brand: "Whirlpool", model: "WL S2260 NE", price: 350, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WL%20S2260", features: "60cm, 4 zones, Booster function", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 4 } },
-                    { id: "cooktop-10", rank: 10, brand: "Gorenje", model: "IT643BX", price: 320, store: "Technopolis", url: "https://www.technopolis.bg/search?text=IT643BX", features: "60cm, 4 zones, PowerBoost", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 4 } }
+                    { id: "cooktop-1", rank: 1, brand: "Bosch", model: "PIF672FB1E", price: 430, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PIF672FB1E", features: "60cm, Induction, 4 zones, TouchSelect, 17 power levels", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-q1", rank: 2, brand: "Electrolux", model: "LHR3233CK", price: 175, store: "Tim Design Quote", url: "#", features: "60cm, CERAMIC (not induction), 4 zones, Budget", isQuoted: true, ratings: { reviews: 3.5, value: 5, features: 2, connectivity: 1, efficiency: 3 } },
+                    { id: "cooktop-2", rank: 3, brand: "Beko", model: "HII 64401 QT", price: 256, store: "Technopolis", url: "https://www.technopolis.bg/search?text=HII%2064401", features: "59cm, Induction, 4 zones, Touch control, Timer", ratings: { reviews: 4, value: 5, features: 4, connectivity: 1, efficiency: 5 } },
+                    { id: "cooktop-3", rank: 4, brand: "Whirlpool", model: "WS Q2160 NE", price: 389, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Indukcionen-Plot-za-vgrazhdane-WHIRLPOOL-WS-Q2160-NE/p/650495", features: "59cm, Induction, 4 zones, Touch control", ratings: { reviews: 4, value: 4, features: 4, connectivity: 1, efficiency: 5 } },
+                    { id: "cooktop-4", rank: 5, brand: "AEG", model: "IKE64450XB", price: 430, store: "Technopolis", url: "https://www.technopolis.bg/search?text=IKE64450XB", features: "60cm, Induction, MaxiSense, Bridge function", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-5", rank: 6, brand: "Bosch", model: "PIF 672FB1E", price: 430, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PIF%20672FB1E", features: "60cm, Induction, DirectSelect", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-6", rank: 7, brand: "Electrolux", model: "EIS67453", price: 705, store: "Technopolis", url: "https://www.technopolis.bg/en/Plotove-za-vgrazhdane/Plot-za-vgrazhdane-ELECTROLUX-EIS67453/p/654593", features: "59cm, Induction, 4 zones, Premium", ratings: { reviews: 4, value: 3, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-7", rank: 8, brand: "Siemens", model: "EU631FEB1E", price: 480, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EU631FEB1E", features: "60cm, Induction, iQ100, TouchControl", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "cooktop-8", rank: 9, brand: "Samsung", model: "NZ64B5045GK", price: 520, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20NZ64B5045GK", features: "60cm, Induction, Virtual Flame, Flex Zone", ratings: { reviews: 4, value: 3, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "cooktop-9", rank: 10, brand: "Bosch", model: "PXE675DC1E", price: 750, store: "Technopolis", url: "https://www.technopolis.bg/search?text=PXE675DC1E", features: "60cm, FlexInduction, Premium", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 2, efficiency: 5 } }
                 ]
             },
             hood: {
@@ -345,43 +407,43 @@
                 icon: "💨",
                 description: "Built-in/Telescopic, 60cm",
                 topPicks: [
-                    { rank: 1, name: "Bosch DFR067A52", reason: "Best overall: 399m³/h airflow, Energy class A, quiet 53dB, LED lighting. German made with 5-year warranty. Best balance of power and noise." },
-                    { rank: 2, name: "Elica ELITE 14 LUX", reason: "Best value: Telescopic design saves space, 304m³/h sufficient for most cooking. Sleek glass panel design at affordable price." },
-                    { rank: 3, name: "Siemens LI67SA531", reason: "Best mid-range: 740m³/h for serious cooking, iQ300 series reliability. Worth it if you cook frequently with strong odors." }
+                    { rank: 1, name: "Electrolux LFG525S (QUOTED)", reason: "Best value from quote: €189 (sale) for built-in hood. Sufficient for normal cooking. 5-year warranty." },
+                    { rank: 2, name: "Bosch DLN56AC60", reason: "Best power: 570m³/h airflow, Energy class B, LED. German quality at €332." },
+                    { rank: 3, name: "Elica ELITE 14 LUX", reason: "Best budget: Telescopic design, 304m³/h, glass panel at only €117." }
                 ],
                 options: [
-                    { id: "hood-1", rank: 1, brand: "Bosch", model: "DFR067A52", price: 373, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-BOSCH-DFR067A52/p/650075", features: "60cm, 399m³/h, Class A, 53dB, LED", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "hood-2", rank: 2, brand: "Elica", model: "ELITE 14 LUX GRVT/A/60", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-ELICA-ELITE-14-LUX-GRVT-A-60/p/651377", features: "60cm, 304m³/h, Class D, LED, Glass panel", ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
-                    { id: "hood-3", rank: 3, brand: "Siemens", model: "LI67SA531", price: 420, store: "Technopolis", url: "https://www.technopolis.bg/search?text=LI67SA531", features: "60cm, 740m³/h, Class A, iQ300", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "hood-4", rank: 4, brand: "Bosch", model: "DLN56AC60", price: 332, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-palno-vgrazhdane/Absorbator-BOSCH-DLN56AC60/p/653825", features: "52cm, 570m³/h, Class B, LED", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "hood-5", rank: 5, brand: "Electrolux", model: "LFG716X", price: 350, store: "Technopolis", url: "https://www.technopolis.bg/search?text=LFG716X", features: "60cm, 600m³/h, Class B, LED", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "hood-6", rank: 6, brand: "Elica", model: "FLAT GLASS IX/A/60", price: 194, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-FLAT-GLASS-IX-A-60/p/651379", features: "60cm, 368m³/h, Class D, T-shape", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
-                    { id: "hood-7", rank: 7, brand: "AEG", model: "DPB3631S", price: 380, store: "Technopolis", url: "https://www.technopolis.bg/search?text=DPB3631S", features: "60cm, 600m³/h, Class A, Hob2Hood", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 5 } },
-                    { id: "hood-8", rank: 8, brand: "Elica", model: "MISSY LX IX/A/60", price: 112, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-MISSY-LX-IX-A-60/p/651380", features: "60cm, 395m³/h, Class D, LED", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
-                    { id: "hood-9", rank: 9, brand: "Whirlpool", model: "AKR 036 G BL", price: 150, store: "Technopolis", url: "https://www.technopolis.bg/search?text=AKR%20036", features: "60cm, 400m³/h, Class D, 3 speeds", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
-                    { id: "hood-10", rank: 10, brand: "Elica", model: "VERVE WH/F/60", price: 72, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-VERVE-WH-F-60/p/651375", features: "60cm, 205m³/h, Class C, Budget", ratings: { reviews: 3, value: 4, features: 2, connectivity: 1, efficiency: 2 } }
+                    { id: "hood-q1", rank: 1, brand: "Electrolux", model: "LFG525S", price: 189, store: "Tim Design Quote", url: "#", features: "60cm, Built-in, 5-year warranty", isQuoted: true, ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 4 } },
+                    { id: "hood-1", rank: 2, brand: "Bosch", model: "DLN56AC60", price: 332, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-palno-vgrazhdane/Absorbator-BOSCH-DLN56AC60/p/653825", features: "52cm, 570m³/h, Class B, 66dB, LED", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "hood-2", rank: 3, brand: "Elica", model: "ELITE 14 LUX GRVT/A/60", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-ELICA-ELITE-14-LUX-GRVT-A-60/p/651377", features: "60cm, Telescopic, 304m³/h, Class D, Glass", ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-3", rank: 4, brand: "Elica", model: "MISSY LX IX/A/60", price: 112, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-MISSY-LX-IX-A-60/p/651380", features: "60cm, Wall-mount, 395m³/h, Class D", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-4", rank: 5, brand: "Elica", model: "FLAT GLASS IX/A/60", price: 194, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-FLAT-GLASS-IX-A-60/p/651379", features: "60cm, T-shape, 368m³/h, Class D", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-5", rank: 6, brand: "Jetair", model: "AURORA LX GRIX/A/60", price: 180, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-JETAIR-AURORA-LX-GRIX-A-60/p/653237", features: "60cm, Telescopic, Budget option", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "hood-6", rank: 7, brand: "Bosch", model: "DFR067A52", price: 373, store: "Technopolis", url: "https://www.technopolis.bg/en/Teleskopichni-absorbatori/Absorbator-BOSCH-DFR067A52/p/650075", features: "60cm, 399m³/h, Class A, 53dB, LED", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "hood-7", rank: 8, brand: "Elica", model: "VERVE WH/F/60", price: 72, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-stenen-montazh/Absorbator-ELICA-VERVE-WH-F-60/p/651375", features: "60cm, 205m³/h, Class C, Budget", ratings: { reviews: 3, value: 4, features: 2, connectivity: 1, efficiency: 2 } },
+                    { id: "hood-8", rank: 9, brand: "Siemens", model: "LI67SA531", price: 420, store: "Technopolis", url: "https://www.technopolis.bg/search?text=LI67SA531", features: "60cm, 740m³/h, Class A, iQ300", ratings: { reviews: 4.5, value: 3, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "hood-9", rank: 10, brand: "Neff", model: "I98WMM1S5", price: 2146, store: "Technopolis", url: "https://www.technopolis.bg/en/Absorbatori-za-palno-vgrazhdane/Absorbator-NEFF-I98WMM1S5/p/650017", features: "90cm, 519m³/h, Premium, Class A", ratings: { reviews: 4.5, value: 2, features: 5, connectivity: 3, efficiency: 5 } }
                 ]
             },
             oven: {
                 name: "Built-in Oven",
                 icon: "🍳",
-                description: "Built-in, 60cm, Pyrolytic recommended",
+                description: "Built-in, 60cm",
                 topPicks: [
-                    { rank: 1, name: "AEG BPE558370M", reason: "Best overall: Pyrolytic + Steam cooking + Meat probe. Which? highly rated. Perfect for serious home cooks who want versatility." },
-                    { rank: 2, name: "Bosch HBG536EW3", reason: "Best value: Soft close, 7 heating modes, A+ efficiency at moderate price. No pyrolytic but excellent core performance." },
-                    { rank: 3, name: "AEG BPS351161M", reason: "Best budget pyrolytic: Self-cleaning at the lowest price point. 72L capacity with telescopic shelves." }
+                    { rank: 1, name: "Electrolux EOD5F71Z (QUOTED)", reason: "Best value from quote: €419 (sale) with 5-year warranty. Solid Electrolux quality at great price." },
+                    { rank: 2, name: "Electrolux EOD3H70X", reason: "Best budget retail: 72L, A class, telescopic shelves at €358. Good basic oven." },
+                    { rank: 3, name: "AEG BPS351161M", reason: "Best with pyrolytic: Self-cleaning at €485. Worth the upgrade for easy maintenance." }
                 ],
                 options: [
-                    { id: "oven-1", rank: 1, brand: "AEG", model: "BPE558370M", price: 766, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-BPE558370M/p/652189", features: "71L, A+, Pyrolytic, Steam, Meat probe", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
-                    { id: "oven-2", rank: 2, brand: "Bosch", model: "HBG536EW3", price: 500, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HBG536EW3/p/653647", features: "71L, A+, Soft close, 7 heating modes", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "oven-3", rank: 3, brand: "AEG", model: "BPS351161M", price: 485, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-BPS351161M/p/652313", features: "72L, A+, Pyrolytic, Telescopic shelves", ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "oven-4", rank: 4, brand: "Siemens", model: "HB537A0S0", price: 580, store: "eMAG", url: "https://www.emag.bg/search/Siemens%20HB537A0S0", features: "71L, A+, iQ500, 3D HotAir", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "oven-5", rank: 5, brand: "Samsung", model: "NV7B4430ZAS", price: 620, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20NV7B4430ZAS", features: "76L, A+, Dual Cook, Steam", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
-                    { id: "oven-6", rank: 6, brand: "Whirlpool", model: "W7 OM4 4S1 P", price: 450, store: "Technopolis", url: "https://www.technopolis.bg/search?text=W7%20OM4", features: "73L, A+, Pyrolytic, 6th Sense", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "oven-7", rank: 7, brand: "Electrolux", model: "EOD3H70X", price: 400, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-EOD3H70X/p/707651", features: "72L, A, Telescopic shelves", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
-                    { id: "oven-8", rank: 8, brand: "Gorenje", model: "BPS6747A04X", price: 380, store: "Technopolis", url: "https://www.technopolis.bg/search?text=BPS6747A04X", features: "77L, A+, Pyrolytic, AirFry", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "oven-9", rank: 9, brand: "Bosch", model: "HBG7741W1", price: 935, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HBG7741W1/p/651983", features: "71L, A+, Pyrolytic, 14 functions", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
-                    { id: "oven-10", rank: 10, brand: "Bosch", model: "HRG578CB7", price: 970, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HRG578CB7/p/653627", features: "71L, A+, Pyrolytic, Steam, AirFry", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } }
+                    { id: "oven-q1", rank: 1, brand: "Electrolux", model: "EOD5F71Z", price: 419, store: "Tim Design Quote", url: "#", features: "72L, A+, 5-year warranty, Sale price", isQuoted: true, ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-1", rank: 2, brand: "Electrolux", model: "EOD3H70X", price: 358, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-EOD3H70X/p/707651", features: "72L, A, Telescopic shelves", ratings: { reviews: 4, value: 5, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "oven-2", rank: 3, brand: "AEG", model: "BPS351161M", price: 485, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-BPS351161M/p/652313", features: "72L, A+, Pyrolytic, Telescopic shelves", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-3", rank: 4, brand: "Electrolux", model: "EOE8P39V", price: 486, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-EOE8P39V/p/650003", features: "72L, A+, Pyrolytic, Soft close", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-4", rank: 5, brand: "Electrolux", model: "EOD5F70BX", price: 358, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-EOD5F70BX/p/653275", features: "65L, A, Basic model", ratings: { reviews: 4, value: 5, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "oven-5", rank: 6, brand: "AEG", model: "OA5CB31SM", price: 536, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-AEG-OA5CB31SM/p/653973", features: "72L, A, Telescopic shelves", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "oven-6", rank: 7, brand: "Electrolux", model: "LOD8P39Z", price: 689, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-ELECTROLUX-LOD8P39Z/p/653985", features: "72L, A+, Pyrolytic, Premium", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "oven-7", rank: 8, brand: "Bosch", model: "HBG536EW3", price: 550, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HBG536EW3/p/653647", features: "71L, A+, Soft close, 7 modes", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "oven-8", rank: 9, brand: "Bosch", model: "HRG532BB3", price: 731, store: "Technopolis", url: "https://www.technopolis.bg/en/Furni-za-vgrazhdane/Furna-za-vgrazhdane-BOSCH-HRG532BB3/p/653630", features: "71L, A+, Steam, Premium", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "oven-9", rank: 10, brand: "Bosch", model: "HBG539EB3", price: 705, store: "Technopolis", url: "https://www.technopolis.bg/search?text=HBG539EB3", features: "71L, A+, Telescopic, Soft close", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 2, efficiency: 5 } }
                 ]
             },
             dishwasher: {
@@ -389,65 +451,65 @@
                 icon: "🍽️",
                 description: "Built-in, 60cm, 14 place settings",
                 topPicks: [
-                    { rank: 1, name: "Bosch SMV6ECX10E", reason: "Best overall: Class A efficiency, Inverter motor, 42dB quiet, Auto door opening. Consumer Reports top-rated brand with 5-year warranty." },
-                    { rank: 2, name: "Bosch SMV4HVX14E", reason: "Best value: WiFi control at entry-level price. Good efficiency (Class C) and Bosch reliability without premium cost." },
-                    { rank: 3, name: "Neff S155ECX00E", reason: "Best premium: TimeLight projects remaining time on floor, Flex baskets, same quality as Bosch (same parent company)." }
+                    { rank: 1, name: "Electrolux EES48200L (QUOTED)", reason: "Best value from quote: €469 (sale) with 5-year warranty. Electrolux reliability at great price." },
+                    { rank: 2, name: "Gorenje GV642D65", reason: "Best budget retail: €307 for 14 settings, Class D. 7-year warranty from Beko alternative." },
+                    { rank: 3, name: "Bosch SMV6ECX10E", reason: "Best premium: Class A, Inverter, 42dB quiet, Auto door at €833. Worth it for efficiency." }
                 ],
                 options: [
-                    { id: "dish-1", rank: 1, brand: "Bosch", model: "SMV6ECX10E", price: 833, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6ECX10E/p/653335", features: "14 settings, A, Inverter, 42dB, Auto door", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
-                    { id: "dish-2", rank: 2, brand: "Bosch", model: "SMV4HVX14E", price: 572, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV4HVX14E/p/654660", features: "14 settings, C, WiFi, 46dB", ratings: { reviews: 4, value: 5, features: 4, connectivity: 4, efficiency: 3 } },
-                    { id: "dish-3", rank: 3, brand: "Neff", model: "S155ECX00E", price: 880, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-NEFF-S155ECX00E/p/652392", features: "14 settings, A, TimeLight, Flex baskets", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
-                    { id: "dish-4", rank: 4, brand: "Bosch", model: "SBH4ECX28E", price: 750, store: "Technopolis", url: "https://www.technopolis.bg/search?text=SBH4ECX28E", features: "14 settings, Inverter, 42dB, Made in Germany", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "dish-5", rank: 5, brand: "AEG", model: "FSE83837P", price: 820, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FSE83837P", features: "14 settings, A, ComfortLift, AirDry", ratings: { reviews: 4, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
-                    { id: "dish-6", rank: 6, brand: "Electrolux", model: "EEM69410L", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EEM69410L", features: "15 settings, A, MaxiFlex, QuickSelect", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
-                    { id: "dish-7", rank: 7, brand: "Samsung", model: "DW60M6050BB", price: 620, store: "eMAG", url: "https://www.emag.bg/search/Samsung%20DW60M6050BB", features: "14 settings, E, WaterWall", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 3, efficiency: 2 } },
-                    { id: "dish-8", rank: 8, brand: "Bosch", model: "SMV6YCX05E", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6YCX05E/p/652077", features: "14 settings, A, Inverter, 44dB, Zeolith", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
-                    { id: "dish-9", rank: 9, brand: "Whirlpool", model: "WIO 3T141 PES", price: 550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WIO%203T141", features: "14 settings, C, 6th Sense, Natural Dry", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 2, efficiency: 3 } },
-                    { id: "dish-10", rank: 10, brand: "Siemens", model: "SN65ZX07CE", price: 950, store: "eMAG", url: "https://www.emag.bg/search/Siemens%20SN65ZX07CE", features: "14 settings, A, Zeolith drying", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 5 } }
+                    { id: "dish-q1", rank: 1, brand: "Electrolux", model: "EES48200L", price: 469, store: "Tim Design Quote", url: "#", features: "14 settings, 5-year warranty, Sale price", isQuoted: true, ratings: { reviews: 4, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "dish-1", rank: 2, brand: "Gorenje", model: "GV642D65", price: 307, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-GORENJE-GV642D65/p/654107", features: "14 settings, Class D, 6 programmes", ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "dish-2", rank: 3, brand: "Beko", model: "BDIN 14320", price: 307, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BEKO-BDIN-14320/p/680749", features: "13 settings, Class E, 7-year warranty", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 1, efficiency: 2 } },
+                    { id: "dish-3", rank: 4, brand: "Bosch", model: "SMV4HVX14E", price: 572, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV4HVX14E/p/654660", features: "14 settings, Class C, WiFi, 46dB", ratings: { reviews: 4, value: 4, features: 4, connectivity: 4, efficiency: 3 } },
+                    { id: "dish-4", rank: 5, brand: "Bosch", model: "SMV6ECX10E", price: 833, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6ECX10E/p/653335", features: "14 settings, Class A, Inverter, 42dB, Auto door", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-5", rank: 6, brand: "Electrolux", model: "EEM69410L", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EEM69410L", features: "15 settings, Class A, MaxiFlex", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 5 } },
+                    { id: "dish-6", rank: 7, brand: "Neff", model: "S155ECX00E", price: 880, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-NEFF-S155ECX00E/p/652392", features: "14 settings, Class A, TimeLight", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-7", rank: 8, brand: "AEG", model: "FSE83837P", price: 820, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FSE83837P", features: "14 settings, Class A, ComfortLift", ratings: { reviews: 4, value: 3, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "dish-8", rank: 9, brand: "Bosch", model: "SMV6YCX05E", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/en/Sadomiyalni-za-vgrazhdane/Sadomiyalna-za-vgrazhdane-BOSCH-SMV6YCX05E/p/652077", features: "14 settings, Class A, Zeolith drying", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 5 } },
+                    { id: "dish-9", rank: 10, brand: "Siemens", model: "SN65ZX07CE", price: 950, store: "eMAG", url: "https://www.emag.bg/search/Siemens%20SN65ZX07CE", features: "14 settings, Class A, Premium", ratings: { reviews: 4.5, value: 2, features: 5, connectivity: 3, efficiency: 5 } }
                 ]
             },
             washerDryer: {
                 name: "Washer-Dryer Combo",
                 icon: "👕",
-                description: "Combined unit, 10kg wash / 6kg dry",
+                description: "Combined unit, ~10kg wash / 6kg dry",
                 topPicks: [
-                    { rank: 1, name: "LG F4DR510S2M", reason: "Best overall: AI DD detects fabric for optimal wash, 10kg/6kg capacity, excellent reviews. Best washing performance in combo category." },
-                    { rank: 2, name: "Samsung WD90DG6G94BKU4", reason: "Best features: Steam refresh, Ecobubble, AI-powered cycles. Slightly less capacity but better drying than LG." },
-                    { rank: 3, name: "Bosch WNG254A0BY", reason: "Best premium: Iron Assist reduces wrinkles, AutoDry sensors. German reliability but at significant price premium." }
+                    { rank: 1, name: "LG F4DR510S2M", reason: "Best overall: AI DD fabric detection, 10kg/6kg, excellent reviews at €715. Best washing performance." },
+                    { rank: 2, name: "Electrolux EW7W2682E (QUOTED)", reason: "Good value from quote: €789 with 5-year warranty. Solid mid-range option." },
+                    { rank: 3, name: "Samsung WD90DG6G94BKU4", reason: "Best features: Steam, Ecobubble, WiFi at €792. Slightly less capacity but great tech." }
                 ],
                 options: [
-                    { id: "wd-1", rank: 1, brand: "LG", model: "F4DR510S2M", price: 715, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-LG-F4DR510S2M/p/652143", features: "10kg/6kg, 1400rpm, Inverter, AI DD", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 4, efficiency: 4 } },
-                    { id: "wd-2", rank: 2, brand: "Samsung", model: "WD90DG6G94BKU4", price: 792, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD90DG6G94BKU4/p/654074", features: "9kg/6kg, 1400rpm, Steam, Inverter", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
-                    { id: "wd-3", rank: 3, brand: "Bosch", model: "WNG254A0BY", price: 1073, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-BOSCH-WNG254A0BY/p/652647", features: "10kg/6kg, 1400rpm, AutoDry, Iron Assist", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 4 } },
-                    { id: "wd-4", rank: 4, brand: "Samsung", model: "WD11DB8B85GBU4", price: 940, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD11DB8B85GBU4/p/653618", features: "11kg/6kg, 1400rpm, AI Ecobubble", ratings: { reviews: 4, value: 3, features: 5, connectivity: 5, efficiency: 4 } },
-                    { id: "wd-5", rank: 5, brand: "LG", model: "F4DV710S2E", price: 850, store: "eMAG", url: "https://www.emag.bg/search/LG%20F4DV710S2E", features: "10.5kg/7kg, 1400rpm, TurboWash, Steam", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 4 } },
-                    { id: "wd-6", rank: 6, brand: "Electrolux", model: "EW7W368S", price: 780, store: "Technopolis", url: "https://www.technopolis.bg/search?text=EW7W368S", features: "8kg/4kg, 1600rpm, SteamCare, SensiCare", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
-                    { id: "wd-7", rank: 7, brand: "AEG", model: "L7WBG68W", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/search?text=L7WBG68W", features: "8kg/4kg, 1600rpm, DualSense, ProSteam", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 4 } },
-                    { id: "wd-8", rank: 8, brand: "Whirlpool", model: "FWDG97168WS", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FWDG97168WS", features: "9kg/6kg, 1600rpm, FreshCare+", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
-                    { id: "wd-9", rank: 9, brand: "Candy", model: "ROW4966DWMCE", price: 620, store: "Technopolis", url: "https://www.technopolis.bg/search?text=ROW4966DWMCE", features: "9kg/6kg, 1400rpm, WiFi, Steam", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 4, efficiency: 3 } },
-                    { id: "wd-10", rank: 10, brand: "Siemens", model: "WN54G2A0BY", price: 1100, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WN54G2A0BY", features: "10kg/6kg, 1400rpm, speedPack, iQdrive", ratings: { reviews: 4, value: 2, features: 4, connectivity: 3, efficiency: 4 } }
+                    { id: "wd-1", rank: 1, brand: "LG", model: "F4DR510S2M", price: 715, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-LG-F4DR510S2M/p/652143", features: "10kg/6kg, 1400rpm, AI DD, Inverter", ratings: { reviews: 4.5, value: 5, features: 5, connectivity: 4, efficiency: 4 } },
+                    { id: "wd-q1", rank: 2, brand: "Electrolux", model: "EW7W2682E", price: 789, store: "Tim Design Quote", url: "#", features: "8kg/4kg, 5-year warranty", isQuoted: true, ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-2", rank: 3, brand: "Samsung", model: "WD90DG6G94BKU4", price: 792, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD90DG6G94BKU4/p/654074", features: "9kg/6kg, 1400rpm, Steam, WiFi", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "wd-3", rank: 4, brand: "Electrolux", model: "EW7W4492E", price: 833, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-ELECTROLUX-EW7W4492E/p/653269", features: "9kg/5kg, 1400rpm, Steam program", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-4", rank: 5, brand: "Samsung", model: "WD11DB8B85GBU4", price: 940, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-SAMSUNG-WD11DB8B85GBU4/p/653618", features: "11kg/6kg, 1400rpm, AI Ecobubble", ratings: { reviews: 4, value: 3, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "wd-5", rank: 6, brand: "Bosch", model: "WNG254A0BY", price: 1073, store: "Technopolis", url: "https://www.technopolis.bg/en/Peralni-sas-sushilni/Peralnya-sas-Sushilnya-BOSCH-WNG254A0BY/p/652647", features: "10kg/6kg, 1400rpm, AutoDry, Iron Assist", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-6", rank: 7, brand: "Candy", model: "ROW4966DWMCE", price: 620, store: "Technopolis", url: "https://www.technopolis.bg/search?text=ROW4966DWMCE", features: "9kg/6kg, 1400rpm, WiFi, Budget", ratings: { reviews: 3.5, value: 4, features: 4, connectivity: 4, efficiency: 3 } },
+                    { id: "wd-7", rank: 8, brand: "Whirlpool", model: "FWDG97168WS", price: 700, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FWDG97168WS", features: "9kg/6kg, 1600rpm, FreshCare+", ratings: { reviews: 3.5, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "wd-8", rank: 9, brand: "AEG", model: "L7WBG68W", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/search?text=L7WBG68W", features: "8kg/4kg, 1600rpm, DualSense", ratings: { reviews: 4, value: 3, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "wd-9", rank: 10, brand: "Siemens", model: "WN54G2A0BY", price: 1100, store: "Technopolis", url: "https://www.technopolis.bg/search?text=WN54G2A0BY", features: "10kg/6kg, 1400rpm, speedPack", ratings: { reviews: 4, value: 2, features: 4, connectivity: 3, efficiency: 4 } }
                 ]
             },
             microwave: {
                 name: "Microwave",
                 icon: "📻",
-                description: "Freestanding, 25-32L",
+                description: "Built-in or Freestanding, 20-32L",
                 topPicks: [
-                    { rank: 1, name: "Samsung MS32DG4504ATE", reason: "Best overall: Large 32L capacity, 1500W power, ceramic interior easy to clean. Best value for a full-size microwave." },
-                    { rank: 2, name: "Panasonic NN-GT45KWSUG", reason: "Best premium: Inverter technology for even heating, grill function, 31L. Panasonic leads in microwave tech." },
-                    { rank: 3, name: "LG MH6565DIS", reason: "Best mid-range: Smart Inverter saves energy, grill included, NeoChef healthy cooking features." }
+                    { rank: 1, name: "LG MS2042D", reason: "Best budget freestanding: Only €102 for 20L, 700W. Simple and effective." },
+                    { rank: 2, name: "Electrolux LMS4253TMK (QUOTED - Built-in)", reason: "From quote: €369 built-in microwave. Integrates with kitchen, 5-year warranty." },
+                    { rank: 3, name: "Bosch FFL023MW0", reason: "Best mid-range: €143 for 20L, 800W, AutoPilot programs. German quality." }
                 ],
                 options: [
-                    { id: "micro-1", rank: 1, brand: "Samsung", model: "MS32DG4504ATE", price: 138, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-MS32DG4504ATE/p/802859", features: "32L, 1500W, Ceramic interior", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "micro-2", rank: 2, brand: "Panasonic", model: "NN-GT45KWSUG", price: 256, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-PANASONIC-NN-GT45KWSUG/p/801534", features: "31L, 1000W, Grill, Inverter", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
-                    { id: "micro-3", rank: 3, brand: "LG", model: "MH6565DIS", price: 180, store: "eMAG", url: "https://www.emag.bg/search/LG%20MH6565DIS", features: "25L, 1000W, Smart Inverter, Grill", ratings: { reviews: 4, value: 5, features: 4, connectivity: 3, efficiency: 5 } },
-                    { id: "micro-4", rank: 4, brand: "Panasonic", model: "NN-K36NBMEPG", price: 148, store: "Technopolis", url: "https://www.technopolis.bg/search?text=NN-K36NBMEPG", features: "24L, 900W, Grill function", ratings: { reviews: 4, value: 5, features: 4, connectivity: 1, efficiency: 4 } },
-                    { id: "micro-5", rank: 5, brand: "Samsung", model: "MG30T5018UE", price: 210, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-BESPOKE-MG30T5018UE/p/800170", features: "30L, 900W, Grill, Bespoke design", ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
-                    { id: "micro-6", rank: 6, brand: "Bosch", model: "FFL023MS2", price: 165, store: "Technopolis", url: "https://www.technopolis.bg/search?text=FFL023MS2", features: "20L, 800W, AutoPilot, LED display", ratings: { reviews: 4, value: 4, features: 3, connectivity: 2, efficiency: 4 } },
-                    { id: "micro-7", rank: 7, brand: "Whirlpool", model: "MWP 253 SB", price: 195, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MWP%20253", features: "25L, 900W, Grill, Crisp", ratings: { reviews: 4, value: 4, features: 4, connectivity: 1, efficiency: 4 } },
-                    { id: "micro-8", rank: 8, brand: "Sharp", model: "R-760S", price: 220, store: "Technopolis", url: "https://www.technopolis.bg/search?text=R-760S", features: "23L, 900W, Grill, Convection", ratings: { reviews: 3.5, value: 3, features: 4, connectivity: 1, efficiency: 4 } },
-                    { id: "micro-9", rank: 9, brand: "Panasonic", model: "NN-ST22RBEVG", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-PANASONIC-NN-ST22RBEVG/p/803144", features: "20L, 800W, Compact", ratings: { reviews: 4, value: 4, features: 2, connectivity: 1, efficiency: 3 } },
-                    { id: "micro-10", rank: 10, brand: "Gorenje", model: "MO23ORAW", price: 95, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MO23ORAW", features: "23L, 900W, Retro design", ratings: { reviews: 3.5, value: 4, features: 2, connectivity: 1, efficiency: 3 } }
+                    { id: "micro-1", rank: 1, brand: "LG", model: "MS2042D", price: 102, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-LG-MS2042D/p/800516", features: "20L, 700W, Freestanding, Budget", ratings: { reviews: 4, value: 5, features: 2, connectivity: 1, efficiency: 3 } },
+                    { id: "micro-q1", rank: 2, brand: "Electrolux", model: "LMS4253TMK", price: 369, store: "Tim Design Quote", url: "#", features: "25L, BUILT-IN, 5-year warranty", isQuoted: true, ratings: { reviews: 4, value: 4, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-2", rank: 3, brand: "Bosch", model: "FFL023MW0", price: 143, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-BOSCH-FFL023MW0/p/803850", features: "20L, 800W, AutoPilot, LED", ratings: { reviews: 4, value: 5, features: 3, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-3", rank: 4, brand: "Midea", model: "MMO-AM25VB", price: 102, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-MIDEA-MMO-AM25VB-BK-/p/802953", features: "25L, 900W, Grill, Budget", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 1, efficiency: 3 } },
+                    { id: "micro-4", rank: 5, brand: "Panasonic", model: "NN-E22JMMEPG", price: 117, store: "Technopolis", url: "https://www.technopolis.bg/search?text=NN-E22JMMEPG", features: "20L, 800W, Compact", ratings: { reviews: 4, value: 5, features: 3, connectivity: 1, efficiency: 4 } },
+                    { id: "micro-5", rank: 6, brand: "Samsung", model: "MS32DG4504ATE", price: 138, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-MS32DG4504ATE/p/802859", features: "32L, 1500W, Ceramic interior", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-6", rank: 7, brand: "LG", model: "MH6565DIS", price: 180, store: "eMAG", url: "https://www.emag.bg/search/LG%20MH6565DIS", features: "25L, 1000W, Smart Inverter, Grill", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "micro-7", rank: 8, brand: "Electrolux", model: "EMS4253TEX", price: 280, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-za-vgrazhdane/Mikrovalnova-za-vgrazhdane-ELECTROLUX-EMS4253TEX/p/707660", features: "25L, Built-in, Grill", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } },
+                    { id: "micro-8", rank: 9, brand: "Panasonic", model: "NN-GT45KWSUG", price: 256, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-PANASONIC-NN-GT45KWSUG/p/801534", features: "31L, 1000W, Grill, Inverter", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 2, efficiency: 5 } },
+                    { id: "micro-9", rank: 10, brand: "Samsung", model: "MG30T5018UE", price: 210, store: "Technopolis", url: "https://www.technopolis.bg/en/Mikrovalnovi-furni/Mikrovalnova-furna-SAMSUNG-BESPOKE-MG30T5018UE/p/800170", features: "30L, 900W, Grill, Bespoke", ratings: { reviews: 4, value: 3, features: 4, connectivity: 2, efficiency: 4 } }
                 ]
             },
             ac: {
@@ -455,21 +517,21 @@
                 icon: "❄️",
                 description: "2 indoor units (living + bedroom)",
                 topPicks: [
-                    { rank: 1, name: "Daikin 2MXM50A + 2x FTXM25R", reason: "Best overall: Industry-leading reliability, A++ efficiency, whisper-quiet operation, R32 refrigerant. Daikin invented VRV technology." },
-                    { rank: 2, name: "Mitsubishi Electric MXZ-2F53VF", reason: "Best premium: A+++ efficiency (highest rated), 12-year warranty, best for extreme climates. Worth the premium for longevity." },
-                    { rank: 3, name: "LG MU2R17 + 2x PC09SQ", reason: "Best value: ThinQ WiFi app control, A++ efficiency, good reliability at mid-range price. Best smart features for the money." }
+                    { rank: 1, name: "GREE System (QUOTED)", reason: "Best value from quote: €1,656 total including installation. Local warranty and support from Tim Design." },
+                    { rank: 2, name: "Daikin 2MXM50A + 2x FTXM25R", reason: "Best premium: Industry-leading reliability, A++, quiet. Worth the premium for longevity." },
+                    { rank: 3, name: "LG MU2R17 + 2x PC09SQ", reason: "Best smart features: ThinQ WiFi app control, A++ efficiency at mid-range price." }
                 ],
                 options: [
-                    { id: "ac-1", rank: 1, brand: "Daikin", model: "2MXM50A + 2x FTXM25R", price: 1850, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=2MXM50A", features: "5.0kW cooling, A++, R32, Quiet operation", ratings: { reviews: 5, value: 4, features: 5, connectivity: 4, efficiency: 5 } },
-                    { id: "ac-2", rank: 2, brand: "Mitsubishi Electric", model: "MXZ-2F53VF + 2x MSZ-AP25", price: 2040, store: "AC Vent Varna", url: "https://acvent.bg/en/catalog/mitsubishi-electric-mxz-2f53vf-multi-split-system-outdoor-unit/", features: "5.3kW cooling, A+++, R32, WiFi ready", ratings: { reviews: 5, value: 4, features: 5, connectivity: 4, efficiency: 5 } },
-                    { id: "ac-3", rank: 3, brand: "LG", model: "MU2R17 + 2x PC09SQ", price: 1550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MU2R17", features: "4.7kW cooling, A++, ThinQ WiFi", ratings: { reviews: 4, value: 5, features: 4, connectivity: 5, efficiency: 4 } },
-                    { id: "ac-4", rank: 4, brand: "Fujitsu", model: "AOYG18KBTA2 + 2x ASYG09", price: 1750, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=AOYG18KBTA2", features: "5.4kW cooling, A++, Human sensor", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
-                    { id: "ac-5", rank: 5, brand: "Samsung", model: "AJ050TXJ2KG + 2x AR09", price: 1650, store: "Technopolis", url: "https://www.technopolis.bg/search?text=AJ050TXJ2KG", features: "5.0kW cooling, A++, Wind-Free", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
-                    { id: "ac-6", rank: 6, brand: "Mitsubishi Heavy", model: "SCM50ZS-W + 2x SRK25", price: 1900, store: "Condex", url: "https://condex.bg/en/product-details/srk-25-zsx-w-2/", features: "5.0kW cooling, A++, Allergen clear", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
-                    { id: "ac-7", rank: 7, brand: "Panasonic", model: "CU-2Z50TBE + 2x CS-Z25", price: 1950, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=CU-2Z50TBE", features: "5.0kW cooling, A++, nanoe X", ratings: { reviews: 4, value: 3, features: 5, connectivity: 4, efficiency: 5 } },
-                    { id: "ac-8", rank: 8, brand: "Toshiba", model: "RAS-2M18U2AVG + 2x RAS-B10", price: 1600, store: "Bittel", url: "https://www.bittel.bg/en/c/air-conditioning/multi-split-systems", features: "5.2kW cooling, A++, Quiet operation", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
-                    { id: "ac-9", rank: 9, brand: "Midea", model: "M2OD-18HFN8 + 2x MSMBAU-09", price: 1200, store: "Midea Bulgaria", url: "https://www.midea.bg/en/midea-air-conditioning/midea-multi-split-air-conditioners/", features: "5.3kW cooling, A+, Budget friendly", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 3, efficiency: 3 } },
-                    { id: "ac-10", rank: 10, brand: "Daikin", model: "2MXM68A9 + 2x FTXM35R", price: 2812, store: "Tempex", url: "https://tempex.bg/en/multi-split-daikin.html", features: "6.8kW cooling, A+++, Powerful mode", ratings: { reviews: 5, value: 2, features: 5, connectivity: 4, efficiency: 5 } }
+                    { id: "ac-q1", rank: 1, brand: "GREE", model: "GWHD18NK + GWH09AGB + GWH12AGC", price: 1656, store: "Tim Design Quote", url: "#", features: "5.2kW, A++, INCLUDES INSTALLATION, 3-year warranty", isQuoted: true, ratings: { reviews: 4, value: 5, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "ac-1", rank: 2, brand: "Daikin", model: "2MXM50A + 2x FTXM25R", price: 1850, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=2MXM50A", features: "5.0kW, A++, R32, Quiet (equipment only)", ratings: { reviews: 5, value: 4, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "ac-2", rank: 3, brand: "LG", model: "MU2R17 + 2x PC09SQ", price: 1550, store: "Technopolis", url: "https://www.technopolis.bg/search?text=MU2R17", features: "4.7kW, A++, ThinQ WiFi (equipment only)", ratings: { reviews: 4, value: 4, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "ac-3", rank: 4, brand: "GREE", model: "GWHD18NK6LO outdoor only", price: 859, store: "Miramax Clima", url: "https://miramax-clima.bg/en/p/outdoor-unit-gree-gwhd18nk6lo-lch-for-2-room-multisplit-system", features: "5.2kW outdoor unit only, A++", ratings: { reviews: 4, value: 5, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "ac-4", rank: 5, brand: "Samsung", model: "AJ050TXJ2KG + 2x AR09", price: 1650, store: "Technopolis", url: "https://www.technopolis.bg/search?text=AJ050TXJ2KG", features: "5.0kW, A++, Wind-Free (equipment only)", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "ac-5", rank: 6, brand: "Fujitsu", model: "AOYG18KBTA2 + 2x ASYG09", price: 1750, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=AOYG18KBTA2", features: "5.4kW, A++, Human sensor (equipment only)", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 3, efficiency: 5 } },
+                    { id: "ac-6", rank: 7, brand: "Toshiba", model: "RAS-2M18U2AVG + 2x RAS-B10", price: 1600, store: "Bittel", url: "https://www.bittel.bg/en/c/air-conditioning/multi-split-systems", features: "5.2kW, A++, Quiet (equipment only)", ratings: { reviews: 4, value: 4, features: 4, connectivity: 3, efficiency: 4 } },
+                    { id: "ac-7", rank: 8, brand: "Mitsubishi Electric", model: "MXZ-2F53VF + 2x MSZ-AP25", price: 2040, store: "AC Vent Varna", url: "https://acvent.bg/en/catalog/mitsubishi-electric-mxz-2f53vf-multi-split-system-outdoor-unit/", features: "5.3kW, A+++, R32 (equipment only)", ratings: { reviews: 5, value: 3, features: 5, connectivity: 4, efficiency: 5 } },
+                    { id: "ac-8", rank: 9, brand: "Midea", model: "M2OD-18HFN8 + 2x MSMBAU-09", price: 1200, store: "Midea Bulgaria", url: "https://www.midea.bg/en/midea-air-conditioning/midea-multi-split-air-conditioners/", features: "5.3kW, A+, Budget (equipment only)", ratings: { reviews: 3.5, value: 5, features: 3, connectivity: 3, efficiency: 3 } },
+                    { id: "ac-9", rank: 10, brand: "Panasonic", model: "CU-2Z50TBE + 2x CS-Z25", price: 1950, store: "KlimaTime", url: "https://klimatime.com/en-bg/search?q=CU-2Z50TBE", features: "5.0kW, A++, nanoe X (equipment only)", ratings: { reviews: 4, value: 3, features: 5, connectivity: 4, efficiency: 5 } }
                 ]
             },
             tv: {
@@ -477,21 +539,21 @@
                 icon: "📺",
                 description: "55\" OLED/QLED for living room",
                 topPicks: [
-                    { rank: 1, name: "LG OLED55B53LA", reason: "Best overall: True OLED with perfect blacks, 120Hz for gaming, Dolby Vision/Atmos. Best picture quality at this price point." },
-                    { rank: 2, name: "Samsung QE-55QN90F", reason: "Best for bright rooms: Mini-LED with 165Hz, Dolby Atmos, brightest TV in category. Ideal if your living room gets lots of sunlight." },
-                    { rank: 3, name: "Samsung QE-55Q80D", reason: "Best value QLED: Full Array backlighting, 120Hz, great gaming features at mid-range price. Sweet spot for most buyers." }
+                    { rank: 1, name: "LG OLED55B43LA", reason: "Best OLED value: Perfect blacks, 120Hz, Dolby Vision at €894. Best picture quality for the price." },
+                    { rank: 2, name: "Samsung QE-55QN85D", reason: "Best for bright rooms: Neo QLED, 100Hz, bright panel at €894. Same price as OLED alternative." },
+                    { rank: 3, name: "LG 55QNED86A3A", reason: "Best mid-range: Mini LED evo, 120Hz, good brightness at €817. Good all-rounder." }
                 ],
                 options: [
-                    { id: "tv-1", rank: 1, brand: "LG", model: "OLED55B53LA", price: 1405, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-LG-OLED55B53LA-4K-Ultra-HD-OLED/p/13895", features: "55\", OLED, 120Hz, WebOS, Dolby Vision", ratings: { reviews: 5, value: 4, features: 5, connectivity: 5, efficiency: 3 } },
-                    { id: "tv-2", rank: 2, brand: "Samsung", model: "QE-55QN90F", price: 1124, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN90F-4K-Ultra-HD-Neo-QLED-Mini-LED/p/13998", features: "55\", Neo QLED Mini-LED, 165Hz, Dolby Atmos", ratings: { reviews: 4.5, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
-                    { id: "tv-3", rank: 3, brand: "Samsung", model: "QE-55Q80D", price: 766, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55Q80D-4K-Ultra-HD-QLED/p/11200", features: "55\", QLED, 120Hz, Full Array", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 5, efficiency: 4 } },
-                    { id: "tv-4", rank: 4, brand: "LG", model: "OLED55C43LA", price: 1650, store: "eMAG", url: "https://www.emag.bg/search/LG%20OLED55C43LA", features: "55\", OLED evo, 120Hz, Alpha 9 Gen6", ratings: { reviews: 5, value: 3, features: 5, connectivity: 5, efficiency: 3 } },
-                    { id: "tv-5", rank: 5, brand: "Samsung", model: "QE-55S90D", price: 1550, store: "eMAG", url: "https://www.emag.bg/televizor-samsung-oled-55s90d-55-138-sm-smart-4k-ultra-hd-100hz-klas-g-model-2024-qe55s90daexxh/pd/DSYNZXYBM/", features: "55\", OLED, 120Hz, Neural Quantum Processor", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 5, efficiency: 3 } },
-                    { id: "tv-6", rank: 6, brand: "Samsung", model: "QE-55QN85D", price: 894, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN85D-4K-Ultra-HD-QLED/p/11067", features: "55\", Neo QLED, 100Hz, Object Tracking Sound", ratings: { reviews: 4, value: 4, features: 4, connectivity: 5, efficiency: 4 } },
-                    { id: "tv-7", rank: 7, brand: "Philips", model: "55OLED808", price: 1300, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55OLED808", features: "55\", OLED, 120Hz, Ambilight", ratings: { reviews: 4, value: 4, features: 5, connectivity: 4, efficiency: 3 } },
-                    { id: "tv-8", rank: 8, brand: "LG", model: "55QNED86A3C", price: 715, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55QNED86A3C", features: "55\", QNED Mini LED, 120Hz, Alpha 7", ratings: { reviews: 4, value: 5, features: 4, connectivity: 4, efficiency: 4 } },
-                    { id: "tv-9", rank: 9, brand: "Samsung", model: "QE-55Q67D", price: 511, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55Q67D-4K-Ultra-HD-QLED/p/11202", features: "55\", QLED, 60Hz, Quantum HDR", ratings: { reviews: 4, value: 5, features: 3, connectivity: 4, efficiency: 4 } },
-                    { id: "tv-10", rank: 10, brand: "Sony", model: "XR-55A80L", price: 1800, store: "Technopolis", url: "https://www.technopolis.bg/search?text=XR-55A80L", features: "55\", OLED, 120Hz, Acoustic Surface Audio", ratings: { reviews: 5, value: 2, features: 5, connectivity: 4, efficiency: 3 } }
+                    { id: "tv-1", rank: 1, brand: "LG", model: "OLED55B43LA", price: 894, store: "Technopolis", url: "https://www.technopolis.bg/search?text=OLED55B43LA", features: "55\", OLED, 120Hz, WebOS, Dolby Vision", ratings: { reviews: 5, value: 5, features: 5, connectivity: 5, efficiency: 3 } },
+                    { id: "tv-2", rank: 2, brand: "Samsung", model: "QE-55QN85D", price: 894, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN85D-4K-Ultra-HD-QLED/p/11067", features: "55\", Neo QLED, 100Hz, Tizen", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-3", rank: 3, brand: "LG", model: "55QNED86A3A", price: 817, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55QNED86A3A", features: "55\", Mini LED evo AI, 120Hz, WebOS", ratings: { reviews: 4.5, value: 5, features: 4, connectivity: 4, efficiency: 4 } },
+                    { id: "tv-4", rank: 4, brand: "Samsung", model: "QE-55LS03D The Frame", price: 868, store: "Technopolis", url: "https://www.technopolis.bg/search?text=QE-55LS03D", features: "55\", QLED, Art Mode, Tizen", ratings: { reviews: 4, value: 4, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-5", rank: 5, brand: "LG", model: "55QNED70A6A", price: 587, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-LG-55QNED70A6A-4K-Ultra-HD-QNED/p/14373", features: "55\", QNED, 60Hz, Budget", ratings: { reviews: 4, value: 5, features: 3, connectivity: 4, efficiency: 4 } },
+                    { id: "tv-6", rank: 6, brand: "LG", model: "OLED55B53LA", price: 1100, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-LG-OLED55B53LA-4K-Ultra-HD-OLED/p/13895", features: "55\", OLED, 120Hz, WebOS", ratings: { reviews: 5, value: 4, features: 5, connectivity: 5, efficiency: 3 } },
+                    { id: "tv-7", rank: 7, brand: "Samsung", model: "QE-55Q80D", price: 920, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55Q80D-4K-Ultra-HD-QLED/p/11200", features: "55\", QLED, 120Hz, Full Array", ratings: { reviews: 4.5, value: 4, features: 4, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-8", rank: 8, brand: "Samsung", model: "QE-55QN90F", price: 1124, store: "Technopolis", url: "https://www.technopolis.bg/en/Televizori/Televizor-SAMSUNG-QE-55QN90F-4K-Ultra-HD-Neo-QLED-Mini-LED/p/13998", features: "55\", Neo QLED Mini-LED, 165Hz", ratings: { reviews: 4.5, value: 3, features: 5, connectivity: 5, efficiency: 4 } },
+                    { id: "tv-9", rank: 9, brand: "Philips", model: "55OLED808", price: 1300, store: "Technopolis", url: "https://www.technopolis.bg/search?text=55OLED808", features: "55\", OLED, 120Hz, Ambilight", ratings: { reviews: 4, value: 3, features: 5, connectivity: 4, efficiency: 3 } },
+                    { id: "tv-10", rank: 10, brand: "Sony", model: "XR-55A80L", price: 1800, store: "Technopolis", url: "https://www.technopolis.bg/search?text=XR-55A80L", features: "55\", OLED, 120Hz, Acoustic Surface", ratings: { reviews: 5, value: 2, features: 5, connectivity: 4, efficiency: 3 } }
                 ]
             }
         };
@@ -540,7 +602,10 @@
         }
 
         function createOptionElement(categoryKey, opt, isSelected) {
-            const optionDiv = createElement('div', 'option' + (isSelected ? ' selected' : ''));
+            var optClasses = 'option';
+            if (isSelected) optClasses += ' selected';
+            if (opt.isQuoted) optClasses += ' quoted';
+            const optionDiv = createElement('div', optClasses);
             
             const mainDiv = createElement('div', 'option-main');
             
@@ -554,6 +619,9 @@
             const headerDiv = createElement('div', 'option-header');
             const rankClass = opt.rank === 1 ? 'top1' : (opt.rank === 2 ? 'top2' : (opt.rank === 3 ? 'top3' : ''));
             headerDiv.appendChild(createElement('span', 'option-rank ' + rankClass, '#' + opt.rank));
+            if (opt.isQuoted) {
+                headerDiv.appendChild(createElement('span', 'quoted-tag', 'Quoted'));
+            }
             headerDiv.appendChild(createElement('span', 'option-brand', opt.brand));
             
             infoDiv.appendChild(headerDiv);
@@ -566,12 +634,14 @@
             priceStoreDiv.appendChild(createElement('div', 'option-store', opt.store));
             rightDiv.appendChild(priceStoreDiv);
             
-            const buyLink = createElement('a', 'option-link', 'Buy');
-            buyLink.href = opt.url;
-            buyLink.target = '_blank';
-            buyLink.rel = 'noopener';
-            buyLink.addEventListener('click', function(e) { e.stopPropagation(); });
-            rightDiv.appendChild(buyLink);
+            if (!opt.isQuoted && opt.url !== '#') {
+                const buyLink = createElement('a', 'option-link', 'Buy');
+                buyLink.href = opt.url;
+                buyLink.target = '_blank';
+                buyLink.rel = 'noopener';
+                buyLink.addEventListener('click', function(e) { e.stopPropagation(); });
+                rightDiv.appendChild(buyLink);
+            }
             
             mainDiv.appendChild(radio);
             mainDiv.appendChild(infoDiv);
@@ -579,7 +649,6 @@
             
             optionDiv.appendChild(mainDiv);
             
-            // Ratings
             if (opt.ratings) {
                 const ratingsDiv = createElement('div', 'ratings');
                 ratingsDiv.appendChild(createRatingBadge('Reviews', opt.ratings.reviews));
@@ -635,7 +704,6 @@
             skipBtn.addEventListener('click', function() { toggleSkip(key); });
             contentDiv.appendChild(skipBtn);
             
-            // Sort options by rank
             var sortedOptions = category.options.slice().sort(function(a, b) { return a.rank - b.rank; });
             
             sortedOptions.forEach(function(opt) {
@@ -652,6 +720,7 @@
         function renderCategories() {
             const app = document.getElementById('app');
             const openCategories = [];
+            const legend = app.querySelector('.legend');
             
             document.querySelectorAll('.category.open').forEach(function(el) {
                 openCategories.push(el.id);
@@ -659,6 +728,24 @@
             
             while (app.firstChild) {
                 app.removeChild(app.firstChild);
+            }
+            
+            if (legend) {
+                app.appendChild(legend);
+            } else {
+                const newLegend = createElement('div', 'legend');
+                newLegend.appendChild(createElement('h3', '', 'Legend'));
+                const item1 = createElement('div', 'legend-item');
+                const color1 = createElement('div', 'legend-color quoted');
+                item1.appendChild(color1);
+                item1.appendChild(createElement('span', '', 'Quoted by Tim Design (local company baseline)'));
+                const item2 = createElement('div', 'legend-item');
+                const color2 = createElement('div', 'legend-color regular');
+                item2.appendChild(color2);
+                item2.appendChild(createElement('span', '', 'Other options from Bulgarian retailers'));
+                newLegend.appendChild(item1);
+                newLegend.appendChild(item2);
+                app.appendChild(newLegend);
             }
 
             Object.keys(applianceData).forEach(function(key) {
